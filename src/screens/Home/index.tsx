@@ -99,6 +99,8 @@ const DATA = [
   },
 ];
 
+// const API = "https://newsdata.io/api/1/news?apikey=pub_92693d267e22c82e8d7ca3f2340f9ac11a5e&q=woman "
+
 const { Navigator, Screen } = createStackNavigator();
 
 export function Home({ navigation }: any){
@@ -173,8 +175,8 @@ export function Home({ navigation }: any){
     }
     return(
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-              <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#181b23', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate('Chat')}>
-                    <Ionicons name="chatbubbles" size={24} color="#D53F8C" />
+              <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate('Chat')}>
+                    <Ionicons name="chatbubbles" size={24} color="#fff" />
                 </TouchableOpacity>
         <View style={styles.searchForm}>
         <TextInput 
@@ -195,79 +197,6 @@ export function Home({ navigation }: any){
         
 
         <View style={styles.user}>
-        <FlatList
-        data={DATA}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(DATA) => DATA.id}
-        renderItem={({ item }) => (
-          <View style={{
-            display: 'flex',
-            width: 'auto',
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 10,
-            borderColor: "#ccc",
-            borderBottomWidth: 0.5,
-          }}>
-          <Image 
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            marginRight: 10,
-          }} 
-          source={{uri : item.photo}}/>
-          <View style={{
-            height: 70,
-            paddingTop: 10,
-            paddingBottom: 20,
-            display: 'flex',
-            justifyContent: "space-between"
-          }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: "#000",
-            }}
-          >
-            {item.title}
-          </Text>
-          <View style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            // width: 280
-          }}>
-          {/* <Text
-          numberOfLines={1}
-            style={{
-              fontSize: 14,
-              color: "#ccc",
-              maxWidth: 250,
-            }}
-          >
-            {item.message}
-          </Text> */}
-          <Text
-            style={{
-              fontSize: 14,
-              color: "#ccc",
-            }}
-          >
-            {item.time}
-          </Text>
-          </View>
-          </View>
-          </View>
-        )}
-        style={{
-          backgroundColor: "#fff",
-          width: "100%",
-          height: "auto",
-        }}
-      />
         <ScrollView showsVerticalScrollIndicator>
         {devs?.map(dev => (
           

@@ -7,7 +7,7 @@ import { MaterialCommunityIcons, AntDesign, MaterialIcons } from '@expo/vector-i
 // import { Orders } from '../screens/Orders'
 // import { Home } from '../screens/Home'
 
-import { Profile } from '../screens/Profile'
+import { Settings, MySettings } from '../screens/Settings'
 import { MyStack, Home } from '../screens/Home'
 import { Police } from '../screens/Police'
 // import { Chat } from '../screens/Chat'
@@ -53,11 +53,11 @@ export function UserTabRoutes(){
                 }}
                 />
                 <Screen 
-                name="Profile"
-                component={Profile}
+                name="MySettings"
+                component={MySettings}
                 options={{
                 tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="person" color={color} size={size} />
+                    <MaterialIcons name="settings" color={color} size={size} />
                   ),
                 }}
                 />

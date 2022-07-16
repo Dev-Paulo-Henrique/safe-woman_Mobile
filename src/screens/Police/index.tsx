@@ -30,7 +30,7 @@ export function Police(){
         > */}
             {/* <ButtonBack/> */}
             {/* <Title>SafeWatch</Title> */}
-            <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#181b23', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => Alert.alert('Erro', 'Ocorreu um erro ao conectar um dispositivo.')}>
+            <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => Alert.alert('Erro', 'Ocorreu um erro ao conectar um dispositivo.')}>
             <Feather name="watch" size={25} color="white" />
             </TouchableOpacity>
         {/* </LinearGradient> */}
