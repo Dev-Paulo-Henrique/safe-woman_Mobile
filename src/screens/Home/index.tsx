@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import theme from '../../theme'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { ButtonBack } from '../../components/ButtonBack';
+import { RectButton, RectButtonProps } from 'react-native-gesture-handler'
 import { Photo } from '../../components/Photo';
 import { Button as PickImageButton } from '../../components/Button'
 import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
@@ -12,25 +13,20 @@ import { MaterialIcons, Ionicons, Feather } from '@expo/vector-icons';
 import { useTheme } from 'styled-components/native'
 import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
+import Slick from 'react-native-slick';
 
 import api from '../../services/api';
+import API from '../../services/apiNews';
 import { connect, disconnect, subscribeToNewDevs } from '../../services/socket';
 import WebView from 'react-native-webview';
+import { Input } from '../../components/Input';
 
-interface DevsProps {
-    _id: string;
-    avatar_url: string;
-    name: string;
-    bio: string;
-    github_username: string;
-    techs: [string]
-}
-
-interface Region {
-    latitude: Number;
-    longitude: Number;
-    latitudeDelta: Number;
-    longitudeDelta: Number;
+interface NewsProps {
+  _id: string;
+  introducao: string;
+  titulo: string;
+  link: string;
+  data_publicacao: string;
 }
 
 const DATA = [
@@ -99,132 +95,176 @@ const DATA = [
   },
 ];
 
-// const API = "https://newsdata.io/api/1/news?apikey=pub_92693d267e22c82e8d7ca3f2340f9ac11a5e&q=woman "
-
 const { Navigator, Screen } = createStackNavigator();
 
-export function Home({ navigation }: any){
+export function Home({navigation}: any){
+  const [posts, setPosts] = useState<NewsProps[]>([]);
 
-  const { COLORS } = useTheme()
-    const [devs, setDevs] = useState<DevsProps[]>([]);
-    const [currentRegion, setCurrentRegion] = useState<Region>(null!);
-    const [techs, setTechs] = useState('');
-  //   const [open, setOpen] = useState(false);
-  
-    useEffect(() => {
-      async function loadInitialPosition() {
-        const { granted } = await requestForegroundPermissionsAsync();
-  
-        if (granted) {
-          const { coords } = await getCurrentPositionAsync({
-          //   enableHighAccuracy: true,
-          });
-  
-          const { latitude, longitude } = coords;
-  
-          setCurrentRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.04,
-            longitudeDelta: 0.04,
-          })
-        }
-      }
-  
-      loadInitialPosition();
-    }, []);
-  
-    useEffect(() => {
-      subscribeToNewDevs((dev: DevsProps) => setDevs([...devs, dev]));
-    }, [devs]);
-  
-    function setupWebsocket() {
-      disconnect();
-  
-      const { latitude, longitude } = currentRegion;
-  
-      connect(
-        latitude,
-        longitude,
-        techs,
-      );
-    }
-  
-    async function loadDevs() {
-      const { latitude, longitude } = currentRegion;
-  
-      const response = await api.get('/search', {
-        params: {
-          latitude,
-          longitude,
-          techs
-        }
-      });
-      
-      
-      setDevs(response.data.devs);
-      setupWebsocket();
-    }
-  
-    function handleRegionChanged(region: React.SetStateAction<Region>) {
-      setCurrentRegion(region);
-    }
-  
-    if (!currentRegion) {
-      return null;
-    }
-    return(
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-              <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate('Chat')}>
+  useEffect(() => {
+    API.get('/').then((response) => {
+      setPosts(response.data.items);
+    });
+    console.log(posts)
+  }, []);
+
+  return(
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
+              {/* <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate('Chat')}>
                     <Ionicons name="chatbubbles" size={24} color="#fff" />
-                </TouchableOpacity>
-        <View style={styles.searchForm}>
-        <TextInput 
-          style={styles.searchInput}
-          placeholder="Buscar usuárias..."
-          placeholderTextColor="#999"
-          autoCapitalize="words"
-          autoCorrect={false}
-          value={techs}
-          onChangeText={setTechs}
-          selectionColor="#D53F8C"
-        />
-
-        <TouchableOpacity onPress={loadDevs} style={styles.loadButton}>
-          <MaterialIcons name="search" size={25} color="#FFF" />
-        </TouchableOpacity>
-
-        
-
-        <View style={styles.user}>
-        <ScrollView showsVerticalScrollIndicator>
-        {devs?.map(dev => (
-          
-              <View style={styles.callout} key={dev._id}>
-                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                <Image 
-              style={styles.avatar} 
-              source={{ uri: dev.avatar_url }}
-            />
-                <View>
-                <Text style={styles.devName}>{dev.name}</Text>
-                <Text style={styles.number}>+{dev.github_username}</Text>
-                </View>
-                </View>
-                <Text style={styles.devBio}>{dev.bio}</Text>
-                <View style={{display: "flex", flexDirection:'row', justifyContent: "space-between", alignItems: "center"}}>
-                <Text style={styles.devTechs}>{dev.techs.join(', ')}</Text>
-                </View>
-              </View>
-        ))}
-        </ScrollView>
+                </TouchableOpacity> */}
+      <Slick
+      showsButtons={false}
+      // autoplay
+      // autoplayTimeout={5}
+      loop={false}
+      showsPagination={false}
+      >
+        <Slick showsButtons={false}
+      autoplay
+      autoplayTimeout={5}
+      // loop={false}
+      showsPagination={false}>
+        {posts.map(post => (
+        <View style={{
+          display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 10,
+            borderColor: "#ccc",
+            borderBottomWidth: 0.5,
+          // flex: 1,
+          justifyContent: 'center',
+        }}>
+          <View style={{
+            // height: 70,
+            paddingTop: 10,
+            paddingBottom: 20,
+            display: 'flex',
+            justifyContent: "space-between"
+          }}>
+          <Text
+          numberOfLines={2}
+            style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: "#000",
+            }}
+          >
+            {post.titulo}
+          </Text>
+          <Text
+          numberOfLines={5}
+            style={{
+              fontSize: 14,
+              color: "#999",
+              // width: 200,
+              marginBottom: 5,
+              marginTop: 5
+            }}
+          >
+            {post.introducao}
+          </Text>
+              <View style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                // width: '100%'
+              }}>
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#555",
+            }}
+          >
+            {post.data_publicacao.split(' ')[0]}
+          </Text>
+          </View>
+          </View>
         </View>
-      </View>
+        ))}
+        </Slick>
+        <FlatList
+        data={DATA}
+        keyExtractor={(DATA) => DATA.id}
+        renderItem={({ item }) => (
+          <RectButton onPress={() => {
+          // setUser(item.title),
+          // navigation.navigate('user'),
+          console.log(item.title)
+          }}>
+          <View style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 10,
+            borderColor: "#ccc",
+            borderBottomWidth: 0.5,
+          }}>
+          <Image 
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+            marginRight: 10,
+          }} 
+          source={{uri : item.photo}}/>
+          <View style={{
+            height: 70,
+            paddingTop: 10,
+            paddingBottom: 20,
+            display: 'flex',
+            justifyContent: "space-between"
+          }}>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: "#000",
+            }}
+          >
+            {item.title}
+          </Text>
+          <View style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: 280
+          }}>
+          <Text
+          numberOfLines={1}
+            style={{
+              fontSize: 14,
+              color: "#ccc",
+              maxWidth: 250,
+            }}
+          >
+            {item.message}
+          </Text>
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#ccc",
+            }}
+          >
+            {item.time}
+          </Text>
+          </View>
+          </View>
+          </View>
+          </RectButton>
+        )}
+        style={{
+          backgroundColor: "#fff",
+          width: "100%",
+          height: "auto",
+        }}
+      />
+      </Slick>
         </KeyboardAvoidingView>
-    )
+  )
 }
 
-export function Chat(){
+export function User(){
   return(
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
         <FlatList
@@ -297,6 +337,44 @@ export function Chat(){
           height: "auto",
         }}
       />
+      <TextInput 
+      placeholder='Mensagem...'
+      style={{
+        paddingHorizontal: 10,
+        height: 56,
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        fontSize: 14,
+        paddingVertical: 7,
+        paddingLeft: 20,
+        fontFamily: 'DMSans_400Regular',
+        borderWidth: 1,
+        borderColor: '#DCDCDC',
+        position: 'absolute', 
+        bottom: 10, 
+        left: 10, 
+        right: 80, 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+      }}/>
+      <RectButton 
+      style={{
+        position: 'absolute', 
+        bottom: 10, 
+        right: 10, 
+        zIndex: 5, 
+        width: 60, 
+        height: 60, 
+        backgroundColor: '#d53f8c', 
+        borderRadius: 30, 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+      }}
+      >
+        <Feather name="arrow-right-circle" size={24} color="white" />
+        </RectButton>
       </KeyboardAvoidingView>
   )
 }
@@ -310,139 +388,18 @@ export function MyStack() {
         options={{
           headerTintColor: 'white',
           headerStyle: { backgroundColor: '#181b23' },
+          headerTitle: 'Safe Woman'
         }}
       />
       <Screen
-        name="Chat"
-        component={Chat}
+        name='user'
+        component={User}
         options={{
           headerTintColor: 'white',
           headerStyle: { backgroundColor: '#181b23' },
+          headerShown: false,
         }}
       />
     </Navigator>
   );
 }
-
-
-const styles = StyleSheet.create({
-    map: {
-      flex: 1
-    },
-  
-    page: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#F5FCFF'
-    },
-    
-    container: {
-      height: 300,
-      width: 300,
-      backgroundColor: 'tomato'
-    },
-    
-    avatar: {
-      width: 54,
-      height: 54,
-      borderRadius: 25,
-      marginRight: 20,
-      borderColor: '#FFF'
-    },
-
-    number: {
-        color: '#888888'
-    },
-    
-    user:{
-      // flex: 1,
-      width: '100%',
-      height: "auto",
-      // overflowY: "auto",
-      display: 'flex',
-    //   flexDirection: 'row',
-    //   marginRight: 10,
-      marginBottom: 20,
-    //   paddingLeft: 20,
-    //   backgroundColor: '#D53F8C',
-      borderRadius: 25,
-      justifyContent: 'center',
-      // alignItems: 'center',
-      position: 'absolute',
-      top: 70,
-      
-    },
-  
-    callout: {
-      width: '100%',
-      height: "auto",
-      backgroundColor: "#fff",
-      borderRadius: 4,
-      marginBottom: 20,
-      padding: 10
-    },
-    
-    devName: {
-      fontWeight: 'bold',
-      fontSize: 16,
-      marginBottom: 5
-    },
-    
-    devBio: {
-      color: '#666',
-      marginTop: 5,
-    },
-  
-    devTechs: {
-      marginTop: 5,
-    },
-    
-    searchForm: {
-    //   position: 'absolute',
-    // flex: 1,
-    display: 'flex',
-    justifyContent: 'center',
-      top: 20, //40
-    //   left: 20,
-    //   right: 20,
-    //   zIndex: 5,
-    // maxHeight: '100%',
-    paddingHorizontal: 20,
-      flexDirection: 'row',
-      width: '100%',
-      // backgroundColor: '#181b23',
-    //   paddingBottom: 500,
-      // paddingTop: 40,
-    //   paddingLeft: 20,
-    //   paddingRight: 20,
-  
-    },
-  
-    searchInput: {
-      flex: 1,
-      height: 50,
-      backgroundColor: '#FFF',
-      color: '#333',
-      borderRadius: 25,
-      paddingHorizontal: 20,
-      fontSize: 16,
-      shadowColor: '#000',
-      shadowOpacity: 0.2,
-      shadowOffset: {
-        width: 4,
-        height: 4,
-      },
-      elevation: 2,
-    },
-  
-    loadButton: {
-      width: 50,
-      height: 50,
-      backgroundColor: '#D53F8C',
-      borderRadius: 25,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginLeft: 15,
-    },
-  })

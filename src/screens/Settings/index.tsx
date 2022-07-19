@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { DeleteLabel, Title, Upload, NameLabel, Description } from './styles'
-import { Platform, KeyboardAvoidingView, TouchableOpacity, View, Alert, Text, FlatList } from 'react-native'
+import { Platform, TextInput, KeyboardAvoidingView, TouchableOpacity, View, Alert, Text, FlatList, ScrollView, StyleSheet, Image } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import theme from '../../theme'
 import 'react-native-gesture-handler';
@@ -8,9 +8,36 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { ButtonBack } from '../../components/ButtonBack';
 import { Photo } from '../../components/Photo';
 import { Button as PickImageButton } from '../../components/Button'
-import { AntDesign, Feather } from '@expo/vector-icons'
+import { AntDesign, Feather, MaterialIcons, Ionicons } from '@expo/vector-icons'
 import { createStackNavigator } from '@react-navigation/stack';
 import WebView from 'react-native-webview';
+import { useTheme } from 'styled-components/native';
+
+// import { Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
+import { RectButton, RectButtonProps } from 'react-native-gesture-handler'
+import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
+import 'react-native-gesture-handler';
+import api from '../../services/api';
+import { connect, disconnect, subscribeToNewDevs } from '../../services/socket';
+import { Input } from '../../components/Input';
+
+
+interface DevsProps {
+  _id: string;
+  avatar_url: string;
+  name: string;
+  bio: string;
+  github_username: string;
+  techs: [string]
+}
+
+interface Region {
+  latitude: Number;
+  longitude: Number;
+  latitudeDelta: Number;
+  longitudeDelta: Number;
+}
+
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -76,11 +103,11 @@ export function Settings({navigation}: any){
                 alignItems: 'flex-start',
                 width: '100%',
             }}>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('')}>
-            <Feather name="battery" size={25} color="black" />
+        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('Search')}>
+            <Feather name="search" size={25} color="black" />
             <Text style={{
                 paddingLeft: 10
-            }}>Bateria</Text>
+            }}>Buscar usuárias</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('')}>
             <Feather name="monitor" size={25} color="black" />
@@ -94,7 +121,7 @@ export function Settings({navigation}: any){
                 paddingLeft: 10
             }}>Avisos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('')}>
+        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('Bluetooth')}>
             <Feather name="bluetooth" size={25} color="black" />
             <Text style={{
                 paddingLeft: 10
@@ -120,12 +147,134 @@ export function Settings({navigation}: any){
         </TouchableOpacity>
         </View>
             </View>
-        <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => Alert.alert('Erro', 'Este serviço não está disponível no momento.')}>
+        {/* <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => Alert.alert('Erro', 'Este serviço não está disponível no momento.')}>
             <AntDesign name="star" size={25} color="white" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         </KeyboardAvoidingView>
     )
 }
+
+export function Search({ navigation }: any){
+
+  const { COLORS } = useTheme()
+    const [devs, setDevs] = useState<DevsProps[]>([]);
+    const [currentRegion, setCurrentRegion] = useState<Region>(null!);
+    const [techs, setTechs] = useState('');
+  //   const [open, setOpen] = useState(false);
+  
+    useEffect(() => {
+      async function loadInitialPosition() {
+        const { granted } = await requestForegroundPermissionsAsync();
+  
+        if (granted) {
+          const { coords } = await getCurrentPositionAsync({
+          //   enableHighAccuracy: true,
+          });
+  
+          const { latitude, longitude } = coords;
+  
+          setCurrentRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.04,
+            longitudeDelta: 0.04,
+          })
+        }
+      }
+  
+      loadInitialPosition();
+    }, []);
+  
+    useEffect(() => {
+      subscribeToNewDevs((dev: DevsProps) => setDevs([...devs, dev]));
+    }, [devs]);
+  
+    function setupWebsocket() {
+      disconnect();
+  
+      const { latitude, longitude } = currentRegion;
+  
+      connect(
+        latitude,
+        longitude,
+        techs,
+      );
+    }
+  
+    async function loadDevs() {
+      const { latitude, longitude } = currentRegion;
+  
+      const response = await api.get('/search', {
+        params: {
+          latitude,
+          longitude,
+          techs
+        }
+      });
+      
+      
+      setDevs(response.data.devs);
+      setupWebsocket();
+    }
+  
+    function handleRegionChanged(region: React.SetStateAction<Region>) {
+      setCurrentRegion(region);
+    }
+  
+    if (!currentRegion) {
+      return null;
+    }
+    return(
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
+              {/* <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate('Chat')}>
+                    <Ionicons name="chatbubbles" size={24} color="#fff" />
+                </TouchableOpacity> */}
+        <View style={styles.searchForm}>
+        <TextInput 
+          style={styles.searchInput}
+          placeholder="Buscar usuárias..."
+          placeholderTextColor="#999"
+          autoCapitalize="words"
+          autoCorrect={false}
+          value={techs}
+          onChangeText={setTechs}
+          selectionColor="#D53F8C"
+        />
+
+        <TouchableOpacity onPress={loadDevs} style={styles.loadButton}>
+          <MaterialIcons name="search" size={25} color="#FFF" />
+        </TouchableOpacity>
+
+        
+
+        <View style={styles.user}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+        {devs?.map(dev => (
+          
+              <View style={styles.callout} key={dev._id}>
+                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                <Image 
+              style={styles.avatar} 
+              source={{ uri: dev.avatar_url }}
+            />
+                <View>
+                <Text style={styles.devName}>{dev.name}</Text>
+                <Text style={styles.number}>+{dev.github_username}</Text>
+                </View>
+                </View>
+                <Text style={styles.devBio}>{dev.bio}</Text>
+                <View style={{display: "flex", flexDirection:'row', justifyContent: "space-between", alignItems: "center"}}>
+                <Text style={styles.devTechs}>{dev.techs.join(', ')}</Text>
+                </View>
+              </View>
+        ))}
+        </ScrollView>
+        </View>
+      </View>
+        </KeyboardAvoidingView>
+    )
+}
+
 
 export function Info(){
     return(
@@ -156,7 +305,7 @@ export function Info(){
 export function Avaliar(){
     return(
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-        <WebView source={{ uri: `https://safe-woman.vercel.app/avaliar/` }}/>
+        <WebView source={{ uri: `https://safe-woman.vercel.app/avaliar/1` }}/>
         </KeyboardAvoidingView>
     )
 }
@@ -211,6 +360,15 @@ export function Manual(){
     )
 }
 
+export function Bluetooth(){
+  return(
+    <WebView source={{uri: "https://embed.lottiefiles.com/animation/34005"}} 
+    style={{
+      flex: 1,
+    }}/>
+  )
+}
+
 export function MySettings() {
     return (
       <Navigator 
@@ -231,6 +389,16 @@ export function MySettings() {
             headerStyle: { backgroundColor: '#181b23' },
           }}
         />
+        
+      <Screen
+        name="Search"
+        component={Search}
+        options={{
+          headerTintColor: 'white',
+          headerStyle: { backgroundColor: '#181b23' },
+          headerTitle: 'Buscar'
+        }}
+      />
         <Screen
           name="Manual"
           component={Manual}
@@ -247,6 +415,147 @@ export function MySettings() {
             headerStyle: { backgroundColor: '#181b23' },
           }}
         />
+        <Screen
+          name="Bluetooth"
+          component={Bluetooth}
+          options={{
+            headerTintColor: 'white',
+            headerStyle: { backgroundColor: '#181b23' },
+          }}
+        />
       </Navigator>
     );
   }
+
+  const styles = StyleSheet.create({
+    map: {
+      flex: 1
+    },
+  
+    page: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#F5FCFF'
+    },
+    
+    container: {
+      height: 300,
+      width: 300,
+      backgroundColor: 'tomato'
+    },
+    
+    avatar: {
+      width: 54,
+      height: 54,
+      borderRadius: 25,
+      marginRight: 20,
+      borderColor: '#FFF'
+    },
+
+    number: {
+        color: '#888888'
+    },
+    
+    user:{
+      // flex: 1,
+      width: '100%',
+      height: "auto",
+      // overflowY: "auto",
+      display: 'flex',
+    //   flexDirection: 'row',
+    //   marginRight: 10,
+      marginBottom: 50,
+    //   paddingLeft: 20,
+    //   backgroundColor: '#D53F8C',
+      borderRadius: 25,
+      justifyContent: 'center',
+      // alignItems: 'center',
+      // position: 'relative',
+      top: 70,
+    },
+  
+    callout: {
+      width: '100%',
+      height: "auto",
+      backgroundColor: "#fff",
+      borderRadius: 4,
+      marginBottom: 20,
+      padding: 10
+    },
+    
+    devName: {
+      fontWeight: 'bold',
+      fontSize: 16,
+      marginBottom: 5
+    },
+    
+    devBio: {
+      color: '#666',
+      marginTop: 5,
+    },
+  
+    devTechs: {
+      marginTop: 5,
+    },
+    
+    searchForm: {
+      // position: 'absolute',
+    // flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+      // top: 20, //40
+      // left: 20,
+      // right: 20,
+    //   zIndex: 5,
+    // maxHeight: '100%',
+    paddingHorizontal: 20,
+      flexDirection: 'row',
+      width: '100%',
+      // backgroundColor: '#181b23',
+      // paddingBottom: 500,
+      paddingTop: 20,
+      // paddingLeft: 20,
+      // paddingRight: 20,
+  
+    },
+  
+    searchInput: {
+      position: 'absolute',
+      // flex: 1,
+      height: 50,
+      // width: 200,
+      top: 20,
+      left: 20,
+      right: 80,
+      // display: 'flex',
+      // flexDirection: 'column',
+      // justifyContent: 'center',
+      // alignItems: 'center',
+      backgroundColor: '#FFF',
+      color: '#333',
+      borderRadius: 25,
+      paddingHorizontal: 20,
+      fontSize: 16,
+      shadowColor: '#000',
+      shadowOpacity: 0.2,
+      shadowOffset: {
+        width: 4,
+        height: 4,
+      },
+      elevation: 2,
+    },
+  
+    loadButton: {
+      position: 'absolute',
+      right: 20,
+      top: 20,
+      width: 50,
+      height: 50,
+      backgroundColor: '#D53F8C',
+      borderRadius: 25,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginLeft: 15,
+    },
+  })
