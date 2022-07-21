@@ -109,24 +109,6 @@ export function Settings({navigation}: any){
                 paddingLeft: 10
             }}>Buscar usuárias</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('')}>
-            <Feather name="monitor" size={25} color="black" />
-            <Text style={{
-                paddingLeft: 10
-            }}>Dashboard</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('')}>
-            <Feather name="alert-circle" size={25} color="black" />
-            <Text style={{
-                paddingLeft: 10
-            }}>Avisos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('Bluetooth')}>
-            <Feather name="bluetooth" size={25} color="black" />
-            <Text style={{
-                paddingLeft: 10
-            }}>Bluetooth</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('Manual')}>
             <Feather name="list" size={25} color="black" />
             <Text style={{
@@ -147,9 +129,6 @@ export function Settings({navigation}: any){
         </TouchableOpacity>
         </View>
             </View>
-        {/* <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => Alert.alert('Erro', 'Este serviço não está disponível no momento.')}>
-            <AntDesign name="star" size={25} color="white" />
-        </TouchableOpacity> */}
         </KeyboardAvoidingView>
     )
 }
@@ -298,6 +277,20 @@ export function Info(){
         }}>A Safe Woman é uma startup de segurança brasileira focada em entregar o melhor valor a seus clientes. Nós começamos a operar em Abril de 2022 com os melhores profissionais do país. Nossa especialidade é no desenvolvimento e aprimoração da segurança feminina utilizando as melhores tecnologias.
 
         A Safe Woman segue uma filosofia simples de Oss: dedicar seu talento e tecnologia à criação de produtos e serviços superiores que contribuam para uma sociedade global melhor.</Description>
+        <View style={{
+          marginLeft: 20,
+          marginTop: 10,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          // justifyContent: 'space-between'
+        }}>
+          <Feather name="instagram" size={25} color="#d53f8c"/>
+          <Text style={{
+            marginLeft: 5,
+            color: "#d53f8c"
+          }}>@safewoman22</Text>
+        </View>
         </KeyboardAvoidingView>
     )
 }
@@ -305,7 +298,7 @@ export function Info(){
 export function Avaliar(){
     return(
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-        <WebView source={{ uri: `https://safe-woman.vercel.app/avaliar/1` }}/>
+        <WebView source={{ uri: `https://safe-woman.vercel.app/avaliar/${TIP[0].id}`}}/>
         </KeyboardAvoidingView>
     )
 }
@@ -360,15 +353,6 @@ export function Manual(){
     )
 }
 
-export function Bluetooth(){
-  return(
-    <WebView source={{uri: "https://embed.lottiefiles.com/animation/34005"}} 
-    style={{
-      flex: 1,
-    }}/>
-  )
-}
-
 export function MySettings() {
     return (
       <Navigator 
@@ -410,14 +394,6 @@ export function MySettings() {
         <Screen
           name="Avaliar"
           component={Avaliar}
-          options={{
-            headerTintColor: 'white',
-            headerStyle: { backgroundColor: '#181b23' },
-          }}
-        />
-        <Screen
-          name="Bluetooth"
-          component={Bluetooth}
           options={{
             headerTintColor: 'white',
             headerStyle: { backgroundColor: '#181b23' },

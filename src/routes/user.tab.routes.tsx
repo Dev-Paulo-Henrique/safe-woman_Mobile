@@ -3,14 +3,8 @@ import { Platform } from 'react-native'
 import { useTheme } from 'styled-components/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { MaterialCommunityIcons, AntDesign, MaterialIcons } from '@expo/vector-icons'
-
-// import { Orders } from '../screens/Orders'
-// import { Home } from '../screens/Home'
-
 import { Settings, MySettings } from '../screens/Settings'
 import { MyStack, Home } from '../screens/Home'
-import { Police } from '../screens/Police'
-// import { Chat } from '../screens/Chat'
 
 const { Navigator, Screen } = createBottomTabNavigator()
 
@@ -43,15 +37,6 @@ export function UserTabRoutes(){
                     ),
                 }}
             />
-                <Screen 
-                name="Police"
-                component={Police}
-                options={{
-                tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="local-police" color={color} size={size} />
-                  ),
-                }}
-                />
                 <Screen 
                 name="MySettings"
                 component={MySettings}

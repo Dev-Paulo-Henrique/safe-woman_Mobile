@@ -20,6 +20,8 @@ import API from '../../services/apiNews';
 import { connect, disconnect, subscribeToNewDevs } from '../../services/socket';
 import WebView from 'react-native-webview';
 import { Input } from '../../components/Input';
+import apiWatch from '../../services/connectWatch';
+import axios from 'axios'
 
 interface NewsProps {
   _id: string;
@@ -99,19 +101,43 @@ const { Navigator, Screen } = createStackNavigator();
 
 export function Home({navigation}: any){
   const [posts, setPosts] = useState<NewsProps[]>([]);
+  const [id, setId] = useState(0);
+  const [client, setClient] = useState('');
+  const [active, setActive] = useState(0);
+  const [lat, setLat] = useState(0);
+  const [lon, setLon] = useState(0);
+  const [place, setPlace] = useState('');
+  const places = axios.create({
+      baseURL: 'https://nominatim.openstreetmap.org/'
+  })
+
+  places.get(`/reverse.php?lat=${lat}&lon=${lon}&format=jsonv2`).then((response) => {
+      setPlace(response.data.name)
+  })
+  
+  useEffect(() => {
+      apiWatch.get('/').then((response) => {
+          setId(response.data.with[0].content.Id);
+          setClient(response.data.with[0].content.Client);
+          setActive(response.data.with[0].content.Active);
+          setLat(response.data.with[0].content.Latitude);
+          setLon(response.data.with[0].content.Longitude);
+          //Sem internet
+          // setId(0);
+          // setClient(0);
+          // setActive(0);
+      })
+    }, []);
 
   useEffect(() => {
     API.get('/').then((response) => {
       setPosts(response.data.items);
     });
-    console.log(posts)
+    // console.log(posts)
   }, []);
 
   return(
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-              {/* <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate('Chat')}>
-                    <Ionicons name="chatbubbles" size={24} color="#fff" />
-                </TouchableOpacity> */}
       <Slick
       showsButtons={false}
       // autoplay
@@ -119,7 +145,90 @@ export function Home({navigation}: any){
       loop={false}
       showsPagination={false}
       >
-        <Slick showsButtons={false}
+        <>
+        <TouchableOpacity 
+            style={{
+                position: 'absolute', 
+                bottom: 10, 
+                right: 10, 
+                zIndex: 5, 
+                width: 60, 
+                height: 60, 
+                backgroundColor: '#d53f8c', 
+                borderRadius: 30, 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center'
+            }}
+            onPress={() => Alert.alert('Conexão', 'Aproxime seu celular do dispositivo')}>
+            <Feather name="watch" size={25} color="white" />
+            </TouchableOpacity>
+            <View style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                // paddingTop: 10,
+                flex: 1
+            }}>
+            {active === 1 ? 
+            <View style={{
+                // marginLeft: 10,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                position: 'absolute',
+                top: 10,
+                left: 10,
+                right: 10,
+            }}>
+            <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Photo uri={
+              client === "Aline" ? DATA[0].photo : 
+              client === "Geovana" ? DATA[2].photo :  
+              client === "Caillany" ? DATA[3].photo :
+              client === "Erica" ? DATA[4].photo :
+              client === "Rayssa" ? DATA[6].photo :
+              client === "Daniel" ? DATA[5].photo :
+              client === "Eduarda" ? DATA[7].photo :
+              client === "Paulo" ? DATA[1].photo :
+              'https://www.gov.br/cdn/sso-status-bar/src/image/user.png'}/>
+            <Text style={{
+              fontWeight: 'bold',
+              fontSize: 18,
+              marginTop: 5
+            }}>{client}</Text>
+            </View>
+            <View style={{
+              
+            }}>
+            <Text>Id: {id}</Text>
+            <Text>Cliente: {client}</Text>
+            <Text>Latitude: {lat}</Text>
+            <Text>Longitude: {lon}</Text>
+            <Text>Local: {place}</Text>
+            <Text>Ativo: {active === 1 ? 'Sim' : 'Não'}</Text>
+            </View>
+            </View> : 
+            <Text style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Carregando...</Text>
+            }
+            </View>
+            <View style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 'auto'
+            }}>
+            <Text style={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              color: '#d53f8c',
+              marginTop: -50,
+              // position: 'absolute',
+              // width: 'auto'
+            }}>Notícias</Text>
+            </View>
+            <Slick showsButtons={false}
       autoplay
       autoplayTimeout={5}
       // loop={false}
@@ -130,8 +239,8 @@ export function Home({navigation}: any){
             flexDirection: 'row',
             alignItems: 'center',
             paddingHorizontal: 10,
-            borderColor: "#ccc",
-            borderBottomWidth: 0.5,
+            // borderColor: "#ccc",
+            // borderBottomWidth: 0.5,
           // flex: 1,
           justifyContent: 'center',
         }}>
@@ -143,7 +252,7 @@ export function Home({navigation}: any){
             justifyContent: "space-between"
           }}>
           <Text
-          numberOfLines={2}
+          numberOfLines={4}
             style={{
               fontSize: 20,
               fontWeight: 'bold',
@@ -153,10 +262,10 @@ export function Home({navigation}: any){
             {post.titulo}
           </Text>
           <Text
-          numberOfLines={5}
+          // numberOfLines={6}
             style={{
               fontSize: 14,
-              color: "#999",
+              color: "#888",
               // width: 200,
               marginBottom: 5,
               marginTop: 5
@@ -183,13 +292,14 @@ export function Home({navigation}: any){
         </View>
         ))}
         </Slick>
+            </>
         <FlatList
         data={DATA}
         keyExtractor={(DATA) => DATA.id}
         renderItem={({ item }) => (
           <RectButton onPress={() => {
           // setUser(item.title),
-          // navigation.navigate('user'),
+          navigation.navigate('user'),
           console.log(item.title)
           }}>
           <View style={{
@@ -267,76 +377,16 @@ export function Home({navigation}: any){
 export function User(){
   return(
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-        <FlatList
-        data={DATA}
-        keyExtractor={(DATA) => DATA.id}
-        renderItem={({ item }) => (
-          <View style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 10,
-            borderColor: "#ccc",
-            borderBottomWidth: 0.5,
-          }}>
-          <Image 
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            marginRight: 10,
-          }} 
-          source={{uri : item.photo}}/>
-          <View style={{
-            height: 70,
-            paddingTop: 10,
-            paddingBottom: 20,
-            display: 'flex',
-            justifyContent: "space-between"
-          }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: "#000",
-            }}
-          >
-            {item.title}
-          </Text>
-          <View style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: 280
-          }}>
-          <Text
-          numberOfLines={1}
-            style={{
-              fontSize: 14,
-              color: "#ccc",
-              maxWidth: 250,
-            }}
-          >
-            {item.message}
-          </Text>
-          <Text
-            style={{
-              fontSize: 14,
-              color: "#ccc",
-            }}
-          >
-            {item.time}
-          </Text>
-          </View>
-          </View>
-          </View>
-        )}
-        style={{
-          backgroundColor: "#fff",
-          width: "100%",
-          height: "auto",
-        }}
-      />
+        <View style={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={{
+          color: '#aaa'
+        }}>Nenhuma mensagem</Text>
+        </View>
       <TextInput 
       placeholder='Mensagem...'
       style={{
@@ -378,6 +428,7 @@ export function User(){
       </KeyboardAvoidingView>
   )
 }
+
 
 export function MyStack() {
   return (
