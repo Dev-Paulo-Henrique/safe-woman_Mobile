@@ -4,7 +4,6 @@ import { Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView,
 import { LinearGradient } from 'expo-linear-gradient';
 import theme from '../../theme'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { ButtonBack } from '../../components/ButtonBack';
 import { RectButton, RectButtonProps } from 'react-native-gesture-handler'
 import { Photo } from '../../components/Photo';
 import { Button as PickImageButton } from '../../components/Button'
