@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { DeleteLabel, Title, Upload } from './styles'
-import { Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
+import { Modal, Pressable, ActivityIndicator, Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import theme from '../../theme'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -99,12 +99,14 @@ const DATA = [
 const { Navigator, Screen } = createStackNavigator();
 
 export function Home({navigation}: any){
+  const [modalVisible, setModalVisible] = useState(false);
   const [posts, setPosts] = useState<NewsProps[]>([]);
   const [id, setId] = useState(0);
   const [client, setClient] = useState('');
   const [active, setActive] = useState(0);
   const [lat, setLat] = useState(0);
   const [lon, setLon] = useState(0);
+  const [device, setDevice] = useState('');
   const [place, setPlace] = useState('');
   const places = axios.create({
       baseURL: 'https://nominatim.openstreetmap.org/'
@@ -114,13 +116,14 @@ export function Home({navigation}: any){
       setPlace(response.data.name)
   })
   
-  useEffect(() => {
+  const loading = useEffect(() => {
       apiWatch.get('/').then((response) => {
           setId(response.data.with[0].content.Id);
           setClient(response.data.with[0].content.Client);
           setActive(response.data.with[0].content.Active);
           setLat(response.data.with[0].content.Latitude);
           setLon(response.data.with[0].content.Longitude);
+          setDevice(response.data.with[0].content.Device);
           //Sem internet
           // setId(0);
           // setClient(0);
@@ -137,6 +140,67 @@ export function Home({navigation}: any){
 
   return(
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  }}>
+          <View style={{
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  }}>
+    <View style={{
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+    }}>
+    <ActivityIndicator size="small" color="#d53f8c"/>
+            <Text style={{
+              marginLeft: 5,
+              textAlign: 'center',
+  }}>
+  Procurando...
+  </Text>
+    </View>
+            <Pressable
+              style={[{
+                borderRadius: 8,
+                padding: 10,
+                elevation: 2,
+              }, {
+                backgroundColor: '#d33',
+              }]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={{
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  }}>Cancelar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <Slick
       showsButtons={false}
       // autoplay
@@ -159,7 +223,9 @@ export function Home({navigation}: any){
                 justifyContent: 'center', 
                 alignItems: 'center'
             }}
-            onPress={() => Alert.alert('Conexão', 'Aproxime seu celular do dispositivo')}>
+            onPress={
+              () => setModalVisible(true)
+            }>
             <Feather name="watch" size={25} color="white" />
             </TouchableOpacity>
             <View style={{
@@ -201,31 +267,67 @@ export function Home({navigation}: any){
             <View style={{
               
             }}>
-            <Text>Id: {id}</Text>
+            <Text style={{
+              fontWeight: 'bold',
+              fontSize: 16
+            }}>Geral:</Text>
             <Text>Cliente: {client}</Text>
+            <Text>Id: {id}</Text>
+            <Text style={{
+              fontWeight: 'bold',
+              fontSize: 16
+            }}>Local:</Text>
+            <Text>Local: {place}</Text>
             <Text>Latitude: {lat}</Text>
             <Text>Longitude: {lon}</Text>
-            <Text>Local: {place}</Text>
             <Text>Ativo: {active === 1 ? 'Sim' : 'Não'}</Text>
-            </View>
-            </View> : 
-            <Text style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Carregando...</Text>
-            }
-            </View>
-            <View style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 'auto'
-            }}>
             <Text style={{
-              fontSize: 24,
               fontWeight: 'bold',
-              color: '#d53f8c',
-              marginTop: -50,
+              fontSize: 16
+            }}>Dispositivo:</Text>
+            <Text>Id: {device}</Text>
+            <Pressable style={{
+              borderRadius: 8,
+              padding: 10,
               // position: 'absolute',
-              // width: 'auto'
-            }}>Notícias</Text>
+              // top: 250,
+              // width: 'auto',
+              marginTop: 10,
+              // marginHorizontal: 20,
+              elevation: 2,
+              backgroundColor: '#d53f8c',
+            }} onPress={() => 
+              axios.post('https://dweet.io/dweet/for/safewoman?Active=0')
+              .then(function (response) {
+                console.log(response);
+                setInterval(() => apiWatch.get('/').then((response) => {
+                  setId(response.data.with[0].content.Id);
+                  setClient(response.data.with[0].content.Client);
+                  setActive(response.data.with[0].content.Active);
+                  setLat(response.data.with[0].content.Latitude);
+                  setLon(response.data.with[0].content.Longitude);
+                  setDevice(response.data.with[0].content.Device);
+              }), 1000)
+                // setTimeout(() => loading, 2000)
+              })
+              .catch(function (error) {
+                console.log(error);
+              })
+              }>
+              <Text style={{
+              textAlign: 'center',
+              fontWeight: 'bold',
+                color: '#fff',
+                fontSize: 18
+              }}>Visualizar</Text>
+            </Pressable>
+            </View>
+            </View> 
+            : 
+            <View style={{alignItems: 'center', width: '100%', justifyContent: 'center', flex: 1}}>
+                <ActivityIndicator size="large" color="#d53f8c"/>
+            </View>
+            }
             </View>
             <Slick showsButtons={false}
       autoplay
@@ -238,6 +340,7 @@ export function Home({navigation}: any){
             flexDirection: 'row',
             alignItems: 'center',
             paddingHorizontal: 10,
+            marginTop: 10,
             // borderColor: "#ccc",
             // borderBottomWidth: 0.5,
           // flex: 1,
