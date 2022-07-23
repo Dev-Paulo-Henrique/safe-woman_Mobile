@@ -280,7 +280,7 @@ export function Home({navigation}: any){
             <Text>Local: {place}</Text>
             <Text>Latitude: {lat}</Text>
             <Text>Longitude: {lon}</Text>
-            <Text>Ativo: {active === 1 ? 'Sim' : 'Não'}</Text>
+            {/* <Text>Ativo: {active === 1 ? 'Sim' : 'Não'}</Text> */}
             <Text style={{
               fontWeight: 'bold',
               fontSize: 16

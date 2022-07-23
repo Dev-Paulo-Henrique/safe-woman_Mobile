@@ -6,6 +6,7 @@ type AuthContextData = {
     signIn: (email: string, password: string) => Promise<void>;
     isLogging: boolean;
     isLogged: boolean;
+    adminIsLogged: boolean;
 }
 
 type AuthProviderProps = {
@@ -17,6 +18,7 @@ export const AuthContext = createContext({} as AuthContextData)
 function AuthProvider({children}: AuthProviderProps){
     const [ isLogging, setIsLogging ] = useState(false)
     const [ isLogged, setIsLogged ] = useState(false)
+    const [ adminIsLogged, setAdminIsLogged ] = useState(false)
 
     async function signIn(email: string, password: string){
         if(!email || !password){
@@ -27,6 +29,8 @@ function AuthProvider({children}: AuthProviderProps){
         if(email === 'teste@gmail.com' && password === '123123123'){
             setTimeout(() => {setIsLogging(false), setIsLogged(true)}, 2000)
             
+        }else if(email === 'admin' && password === 'admin'){
+            setTimeout(() => {setIsLogging(false), setAdminIsLogged(true)}, 2000)
         }
         setTimeout(() => setIsLogging(false), 2000)
         
@@ -37,7 +41,8 @@ function AuthProvider({children}: AuthProviderProps){
         <AuthContext.Provider value={{
             signIn,
             isLogging,
-            isLogged
+            isLogged,
+            adminIsLogged
         }}>
             {children}
         </AuthContext.Provider>
