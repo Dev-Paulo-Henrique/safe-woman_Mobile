@@ -93,7 +93,10 @@ export function Police() {
   const [lon, setLon] = useState(0);
   const [device, setDevice] = useState("");
   const [place, setPlace] = useState("");
-  const [copiedText, setCopiedText] = useState('')
+  const [state, setState] = useState("")
+  const [city, setCity] = useState("")
+  const [cep, setCep] = useState("")
+  const [country, setCountry] = useState("")
 
   const copyToClipboard = () => {
     Clipboard.setString(device)
@@ -107,31 +110,39 @@ export function Police() {
     .get(`/reverse.php?lat=${lat}&lon=${lon}&format=jsonv2`)
     .then((response) => {
       setPlace(response.data.name);
+      setState(response.data.address.state);
+      setCity(response.data.address.city);
+      setCep(response.data.address.postcode);
+      setCountry(response.data.address.country);
     });
 
     useEffect(() => {
-      apiWatch.get('/').then((response) => {
-          setId(response.data.with[0].content.Id);
-          setClient(response.data.with[0].content.Client);
-          setActive(response.data.with[0].content.Active);
-          setLat(response.data.with[0].content.Latitude);
-          setLon(response.data.with[0].content.Longitude);
-          setDevice(response.data.with[0].content.Device);
-      })
+      setInterval(
+        () =>
+          apiWatch.get("/").then((response) => {
+            setId(response.data.with[0].content.Id);
+            setClient(response.data.with[0].content.Client);
+            setActive(response.data.with[0].content.Active);
+            setLat(response.data.with[0].content.Latitude);
+            setLon(response.data.with[0].content.Longitude);
+            setDevice(response.data.with[0].content.Device);
+          }),
+        1000
+      );
     }, []);
 
-  setInterval(
-    () =>
-      apiWatch.get("/").then((response) => {
-        setId(response.data.with[0].content.Id);
-        setClient(response.data.with[0].content.Client);
-        setActive(response.data.with[0].content.Active);
-        setLat(response.data.with[0].content.Latitude);
-        setLon(response.data.with[0].content.Longitude);
-        setDevice(response.data.with[0].content.Device);
-      }),
-    1000
-  );
+  // setInterval(
+  //   () =>
+  //     apiWatch.get("/").then((response) => {
+  //       setId(response.data.with[0].content.Id);
+  //       setClient(response.data.with[0].content.Client);
+  //       setActive(response.data.with[0].content.Active);
+  //       setLat(response.data.with[0].content.Latitude);
+  //       setLon(response.data.with[0].content.Longitude);
+  //       setDevice(response.data.with[0].content.Device);
+  //     }),
+  //   1000
+  // );
 
   return (
     <KeyboardAvoidingView
@@ -254,6 +265,34 @@ export function Police() {
                   borderRadius: 8,
                   marginBottom: 10
                 }}>Local: {place}</Text>
+              <Text style={{
+                  color: '#fff',
+                  backgroundColor: '#1F2029',
+                  padding: 10,
+                  borderRadius: 8,
+                  marginBottom: 10
+                }}>Cidade: {city}</Text>
+              <Text style={{
+                  color: '#fff',
+                  backgroundColor: '#1F2029',
+                  padding: 10,
+                  borderRadius: 8,
+                  marginBottom: 10
+                }}>Estado: {state}</Text>
+              <Text style={{
+                  color: '#fff',
+                  backgroundColor: '#1F2029',
+                  padding: 10,
+                  borderRadius: 8,
+                  marginBottom: 10
+                }}>País: {country}</Text>
+              <Text style={{
+                  color: '#fff',
+                  backgroundColor: '#1F2029',
+                  padding: 10,
+                  borderRadius: 8,
+                  marginBottom: 10
+                }}>CEP: {cep}</Text>
               <View style={{
                 display: "flex",
                 flexDirection: 'row',
