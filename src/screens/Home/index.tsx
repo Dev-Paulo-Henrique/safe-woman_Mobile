@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { DeleteLabel, Title, Upload } from './styles'
+import { DeleteLabel, Title, Upload, Container, Content } from './styles'
 import { Pressable, ActivityIndicator, Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient';
-import theme from '../../theme'
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { RectButton, RectButtonProps } from 'react-native-gesture-handler'
 import { Photo } from '../../components/Photo';
 import { Mode } from '../../components/Modal';
 import { SliderContainer, SliderContent } from '../../components/Slider';
-import { Button as PickImageButton } from '../../components/Button'
-import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
-import { MaterialIcons, Ionicons, Feather } from '@expo/vector-icons';
-import { useTheme } from 'styled-components/native'
 import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 import Slick from 'react-native-slick';
+import { User } from '../Chat'
 
-import { api, API, apiWatch } from '../../services/api';
-import { connect, disconnect, subscribeToNewDevs } from '../../services/socket';
-import WebView from 'react-native-webview';
-import { Input } from '../../components/Input';
+import { api, API, apiWatch, places } from '../../services/api';
 import { DATA } from '../../services/data';
-import axios from 'axios'
 
 interface NewsProps {
   _id: string;
@@ -42,15 +32,12 @@ export function Home({navigation}: any){
   const [lon, setLon] = useState(0);
   const [device, setDevice] = useState('');
   const [place, setPlace] = useState('');
-  const places = axios.create({
-      baseURL: 'https://nominatim.openstreetmap.org/'
-  })
 
   places.get(`/reverse.php?lat=${lat}&lon=${lon}&format=jsonv2`).then((response) => {
       setPlace(response.data.name)
   })
   
-  const loading = useEffect(() => {
+  useEffect(() => {
       apiWatch.get('/').then((response) => {
           setId(response.data.with[0].content.Id);
           setClient(response.data.with[0].content.Client);
@@ -69,7 +56,6 @@ export function Home({navigation}: any){
     API.get('/').then((response) => {
       setPosts(response.data.items);
     });
-    // console.log(posts)
   }, []);
 
   return(
@@ -77,25 +63,9 @@ export function Home({navigation}: any){
       <Mode/>
       <SliderContainer>
         <>
-            <View style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
-                // paddingTop: 10,
-                flex: 1
-            }}>
+            <Container>
             {active === 1 ? 
-            <View style={{
-                // marginLeft: 10,
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                position: 'absolute',
-                top: 10,
-                left: 10,
-                right: 10,
-            }}>
+            <Content>
             <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <Photo uri={
               client === "Aline" ? DATA[0].photo : 
@@ -135,45 +105,15 @@ export function Home({navigation}: any){
               fontSize: 16
             }}>Dispositivo:</Text>
             <Text>Id: {device}</Text>
-            <Pressable style={{
-              borderRadius: 8,
-              padding: 10,
-              marginTop: 10,
-              elevation: 2,
-              backgroundColor: '#d53f8c',
-            }} onPress={() => 
-              axios.post('https://dweet.io/dweet/for/safewoman?Active=0')
-              .then(function (response) {
-                console.log(response);
-                setInterval(() => apiWatch.get('/').then((response) => {
-                  setId(response.data.with[0].content.Id);
-                  setClient(response.data.with[0].content.Client);
-                  setActive(response.data.with[0].content.Active);
-                  setLat(response.data.with[0].content.Latitude);
-                  setLon(response.data.with[0].content.Longitude);
-                  setDevice(response.data.with[0].content.Device);
-              }), 1000)
-              })
-              .catch(function (error) {
-                console.log(error);
-              })
-              }>
-              <Text style={{
-              textAlign: 'center',
-              fontWeight: 'bold',
-                color: '#fff',
-                fontSize: 18
-              }}>Visualizar</Text>
-            </Pressable>
             </View>
-            </View> 
+            </Content> 
             : 
             <View style={{alignItems: 'center', width: '100%', justifyContent: 'center', flex: 1}}>
                 <ActivityIndicator size="large" color="#d53f8c"/>
             </View>
             }
-            </View>
-            <SliderContent>
+            </Container>
+            {/* <SliderContent>
         {posts.map(post => (
         <View style={{
           display: 'flex',
@@ -181,13 +121,9 @@ export function Home({navigation}: any){
             alignItems: 'center',
             paddingHorizontal: 10,
             marginTop: 10,
-            // borderColor: "#ccc",
-            // borderBottomWidth: 0.5,
-          // flex: 1,
           justifyContent: 'center',
         }}>
           <View style={{
-            // height: 70,
             paddingTop: 10,
             paddingBottom: 20,
             display: 'flex',
@@ -233,7 +169,7 @@ export function Home({navigation}: any){
           </View>
         </View>
         ))}
-        </SliderContent>
+        </SliderContent> */}
             </>
         <FlatList
         data={DATA}
@@ -315,62 +251,6 @@ export function Home({navigation}: any){
         </KeyboardAvoidingView>
   )
 }
-
-export function User(){
-  return(
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-        <View style={{
-          flex: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={{
-          color: '#aaa'
-        }}>Nenhuma mensagem</Text>
-        </View>
-      <TextInput 
-      placeholder='Mensagem...'
-      style={{
-        paddingHorizontal: 10,
-        height: 56,
-        backgroundColor: '#fff',
-        borderRadius: 12,
-        fontSize: 14,
-        paddingVertical: 7,
-        paddingLeft: 20,
-        fontFamily: 'DMSans_400Regular',
-        borderWidth: 1,
-        borderColor: '#DCDCDC',
-        position: 'absolute', 
-        bottom: 10, 
-        left: 10, 
-        right: 80, 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-      }}/>
-      <RectButton 
-      style={{
-        position: 'absolute', 
-        bottom: 10, 
-        right: 10, 
-        zIndex: 5, 
-        width: 60, 
-        height: 60, 
-        backgroundColor: '#d53f8c', 
-        borderRadius: 30, 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-      }}
-      >
-        <Feather name="arrow-right-circle" size={24} color="white" />
-        </RectButton>
-      </KeyboardAvoidingView>
-  )
-}
-
 
 export function MyStack() {
   return (

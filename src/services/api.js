@@ -12,4 +12,8 @@ export const apiWatch = axios.create({
   baseURL: 'https://dweet.io/get/latest/dweet/for/safewoman?callback',
 });
 
+export const places = axios.create({
+  baseURL: 'https://nominatim.openstreetmap.org/'
+})
+
 // export default api;

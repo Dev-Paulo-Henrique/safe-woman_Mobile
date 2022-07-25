@@ -25,3 +25,21 @@ justify-content: center;
 align-items: center;
 margin: 32px 0;
 `
+
+export const Container = styled.View`
+display: flex;
+align-items: flex-start;
+justify-content: flex-start;
+flex: 1;
+`
+
+export const Content = styled.View`
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: space-between;
+position: absolute;
+top: 10px;
+left: 10px;
+right: 10px;
+`
