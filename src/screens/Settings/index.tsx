@@ -12,13 +12,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import WebView from 'react-native-webview';
 import { useTheme } from 'styled-components/native';
 
-// import { Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
 import { RectButton, RectButtonProps } from 'react-native-gesture-handler'
 import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
 import 'react-native-gesture-handler';
-import api from '../../services/api';
+import {api} from '../../services/api';
+import {TIP} from '../../services/data';
 import { connect, disconnect, subscribeToNewDevs } from '../../services/socket';
-import { Input } from '../../components/Input';
+import { List } from '../../components/List';
 
 
 interface DevsProps {
@@ -37,43 +37,7 @@ interface Region {
   longitudeDelta: Number;
 }
 
-
 const { Navigator, Screen } = createStackNavigator();
-
-const TIP = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      message: '1. Procure andar com bolsas, carteiras e demais pertences ao alcance das mãos e da visão: na parte da frente do corpo ou nos bolsos frontais. Isso evitará que alguém possa saqueá-lo furtivamente sem que você se dê conta.',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      message: '2. Evite os fones de ouvido. Mesmo que o percurso seja longo e que uma boa música ajude a passar o tempo, esse é um risco que pode ser eliminado. Meliantes escolhem suas vítimas pela fragilidade e vulnerabilidade, além de analisarem o que elas trazem de valor e que podem ser levados.',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      message: '3. Tente manter-se acordado durante a viagem, pois enquanto dormimos deixamos nossos pertences mais acessíveis. Em veículos excessivamente vagos, procure ficar o mais próximo possível ao motorista ou ao cobrador.',
-    },
-    {
-      id: 'gd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      message: '4. Cuidado ao entregar seus pertences para desconhecidos que estejam sentados e que se ofereçam para ajudar. Apesar de a atitude ser nobre, é melhor entregar apenas os objetos que não possuem riscos de serem furtados ou mesmo agradecer o favor, mas não aceitar. Bolsas são alvos fáceis para os ladrões mais ágeis, que podem tirar algo sem que você perceba.',
-    },
-    {
-      id: '8ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      message: '5. Mantenha-se sempre atento. E, se estiver com uma criança de colo, mesmo que ninguém ceda o lugar, nunca a entregue aos cuidados de pessoas desconhecidas. Mantenha as crianças, independente da idade, próximas ou sobre sua visão.',
-    },
-    {
-      id: '18694a0f-3da1-471f-bd96-145571e29d72',
-      message: '6. Além do risco de acidentes, essa atitude pode dar chance a roubos através da janela. Relógios, pulseiras, óculos escuros ou outros adornos podem ser arrancados bruscamente.',
-    },
-    {
-      id: 'qd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      message: '7. Se notar algo estranho no transporte, procure, cautelosamente, avisar ao motorista ou ao cobrador. Eles são orientados e saberão como proceder.',
-    },
-    {
-      id: '98694a0f-3da1-471f-bd96-145571e29d72',
-      message: '8. Nunca saia com muito dinheiro na carteira ou bolsa. O ideal é andar apenas com o dinheiro suficiente para as necessidades mais básicas. Na hora de pagar a passagem, dê preferência a vales-transporte ou cartões magnéticos. Jamais conte dinheiro em vias públicas ou dentro do ônibus, mesmo que quem esteja ao seu lado seja alguém conhecido. Essa medida evitará que você chame a atenção dos oportunistas.',
-    },
-  ];
 
 export function Settings({navigation}: any){
     return(
@@ -94,30 +58,18 @@ export function Settings({navigation}: any){
                 alignItems: 'flex-start',
                 width: '100%',
             }}>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('Search')}>
-            <Feather name="search" size={25} color="black" />
-            <Text style={{
-                paddingLeft: 10
-            }}>Buscar usuárias</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('Manual')}>
-            <Feather name="list" size={25} color="black" />
-            <Text style={{
-                paddingLeft: 10
-            }}>Manual</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('Informações')}>
-            <Feather name="info" size={25} color="black" />
-            <Text style={{
-                paddingLeft: 10
-            }}>Informações</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ width: '100%',paddingHorizontal: 20, borderBottomColor: '#ccc', borderBottomWidth: 0.5, height: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}} onPress={() => navigation.navigate('Avaliar')}>
-            <Feather name="star" size={25} color="black" />
-            <Text style={{
-                paddingLeft: 10
-            }}>Avaliar</Text>
-        </TouchableOpacity>
+        <List title="Buscar usuárias" onPress={() => navigation.navigate("Search")}>
+        <Feather name="search" size={25} color="black" />
+        </List>
+        <List title="Manual" onPress={() => navigation.navigate("Manual")}>
+        <Feather name="list" size={25} color="black" />
+        </List>
+        <List title="Informações" onPress={() => navigation.navigate("Informações")}>
+        <Feather name="info" size={25} color="black" />
+        </List>
+        <List title="Avaliar" onPress={() => navigation.navigate("Avaliar")}>
+        <Feather name="star" size={25} color="black" />
+        </List>
         </View>
             </View>
         </KeyboardAvoidingView>
@@ -196,9 +148,6 @@ export function Search({ navigation }: any){
     }
     return(
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-              {/* <TouchableOpacity style={{position: 'absolute', bottom: 10, right: 10, zIndex: 5, width: 60, height: 60, backgroundColor: '#d53f8c', borderRadius: 30, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate('Chat')}>
-                    <Ionicons name="chatbubbles" size={24} color="#fff" />
-                </TouchableOpacity> */}
         <View style={styles.searchForm}>
         <TextInput 
           style={styles.searchInput}

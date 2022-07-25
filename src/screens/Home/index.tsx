@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { DeleteLabel, Title, Upload } from './styles'
-import { Modal, Pressable, ActivityIndicator, Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
+import { Pressable, ActivityIndicator, Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import theme from '../../theme'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { RectButton, RectButtonProps } from 'react-native-gesture-handler'
 import { Photo } from '../../components/Photo';
+import { Mode } from '../../components/Modal';
+import { SliderContainer, SliderContent } from '../../components/Slider';
 import { Button as PickImageButton } from '../../components/Button'
 import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
 import { MaterialIcons, Ionicons, Feather } from '@expo/vector-icons';
@@ -14,12 +16,11 @@ import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 import Slick from 'react-native-slick';
 
-import api from '../../services/api';
-import API from '../../services/apiNews';
+import { api, API, apiWatch } from '../../services/api';
 import { connect, disconnect, subscribeToNewDevs } from '../../services/socket';
 import WebView from 'react-native-webview';
 import { Input } from '../../components/Input';
-import apiWatch from '../../services/connectWatch';
+import { DATA } from '../../services/data';
 import axios from 'axios'
 
 interface NewsProps {
@@ -30,76 +31,9 @@ interface NewsProps {
   data_publicacao: string;
 }
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    message: 'Gostei muito do trabalho!',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c5bbe8bd019c30ce54/download/Aline.jpeg',
-    title: 'Aline',
-    time: '21:40'
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    message: 'APP top!!!',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c1b3cae167b7430287/download/Paulo.jpg',
-    title: 'Paulo',
-    time: '21:35'
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    message: 'Precisa melhorar o desempenho da página inicial',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99beb914e288c5a6d97f/download/Geovana.jpeg',
-    title: 'Geovana',
-    time: '19:43'
-  },
-  {
-    id: 'gd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    message: 'O usuário precisa de reparos no back-end',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c34265ae6247687fb9/download/Caillany.jpeg',
-    title: 'Caillany',
-    time: '15:29'
-  },
-  {
-    id: '8ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    message: 'Contrato com o governo em pendência',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99bb367e7b76cf442ce1/download/Erica.jpeg',
-    title: 'Erica',
-    time: '13:24'
-  },
-  {
-    id: '18694a0f-3da1-471f-bd96-145571e29d72',
-    message: 'Produção em andamento',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c0028fa042d6ea7aa0/download/Daniel.jpeg',
-    title: 'Daniel',
-    time: '11:49'
-  },
-  {
-    id: 'qd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    message: 'Modelo finalizado com sucesso!',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99bf1bbe03889a69f10f/download/Rayssa.jpeg',
-    title: 'Rayssa',
-    time: '07:01'
-  },
-  {
-    id: '2ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    message: 'Reunião Quarta-feira às 110h',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c63d885c76db91d799/download/Eduarda.jpeg',
-    title: 'Eduarda',
-    time: '06:37'
-  },
-  {
-    id: '98694a0f-3da1-471f-bd96-145571e29d72',
-    message: 'Melhor empresa',
-    photo: 'https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/62a9bf0d5caccd08b376817f/download/grupo.jpg',
-    title: 'Safe Woman',
-    time: '05:00'
-  },
-];
-
 const { Navigator, Screen } = createStackNavigator();
 
 export function Home({navigation}: any){
-  const [modalVisible, setModalVisible] = useState(false);
   const [posts, setPosts] = useState<NewsProps[]>([]);
   const [id, setId] = useState(0);
   const [client, setClient] = useState('');
@@ -140,94 +74,9 @@ export function Home({navigation}: any){
 
   return(
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{flex: 1}}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={{
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  }}>
-          <View style={{
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 15,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  }}>
-    <View style={{
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 15,
-    }}>
-    <ActivityIndicator size="small" color="#d53f8c"/>
-            <Text style={{
-              marginLeft: 5,
-              textAlign: 'center',
-  }}>
-  Procurando...
-  </Text>
-    </View>
-            <Pressable
-              style={[{
-                borderRadius: 8,
-                padding: 10,
-                elevation: 2,
-              }, {
-                backgroundColor: '#d33',
-              }]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={{
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  }}>Cancelar</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-      <Slick
-      showsButtons={false}
-      // autoplay
-      // autoplayTimeout={5}
-      loop={false}
-      showsPagination={false}
-      >
+      <Mode/>
+      <SliderContainer>
         <>
-        <TouchableOpacity 
-            style={{
-                position: 'absolute', 
-                bottom: 10, 
-                right: 10, 
-                zIndex: 5, 
-                width: 60, 
-                height: 60, 
-                backgroundColor: '#d53f8c', 
-                borderRadius: 30, 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center'
-            }}
-            onPress={
-              () => setModalVisible(true)
-            }>
-            <Feather name="watch" size={25} color="white" />
-            </TouchableOpacity>
             <View style={{
                 display: 'flex',
                 alignItems: 'flex-start',
@@ -289,11 +138,7 @@ export function Home({navigation}: any){
             <Pressable style={{
               borderRadius: 8,
               padding: 10,
-              // position: 'absolute',
-              // top: 250,
-              // width: 'auto',
               marginTop: 10,
-              // marginHorizontal: 20,
               elevation: 2,
               backgroundColor: '#d53f8c',
             }} onPress={() => 
@@ -308,7 +153,6 @@ export function Home({navigation}: any){
                   setLon(response.data.with[0].content.Longitude);
                   setDevice(response.data.with[0].content.Device);
               }), 1000)
-                // setTimeout(() => loading, 2000)
               })
               .catch(function (error) {
                 console.log(error);
@@ -329,11 +173,7 @@ export function Home({navigation}: any){
             </View>
             }
             </View>
-            <Slick showsButtons={false}
-      autoplay
-      autoplayTimeout={5}
-      // loop={false}
-      showsPagination={false}>
+            <SliderContent>
         {posts.map(post => (
         <View style={{
           display: 'flex',
@@ -393,7 +233,7 @@ export function Home({navigation}: any){
           </View>
         </View>
         ))}
-        </Slick>
+        </SliderContent>
             </>
         <FlatList
         data={DATA}
@@ -471,7 +311,7 @@ export function Home({navigation}: any){
           height: "auto",
         }}
       />
-      </Slick>
+      </SliderContainer>
         </KeyboardAvoidingView>
   )
 }

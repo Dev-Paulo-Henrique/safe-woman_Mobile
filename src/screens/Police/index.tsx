@@ -12,95 +12,28 @@ import {
 } from "react-native";
 import { getStatusBarHeight, getBottomSpace } from "react-native-iphone-x-helper";
 import { Photo } from "../../components/Photo";
+import { Describe } from "../../components/Describe";
+import { Type, Name } from "../../components/Describe/styles";
 import "react-native-gesture-handler";
 import { Feather } from '@expo/vector-icons'; 
-import WebView from 'react-native-webview'
+import WebView from 'react-native-webview';
+import { DATA } from '../../services/data';
 
-import apiWatch from "../../services/connectWatch";
+import { apiWatch } from "../../services/api";
 import axios from "axios";
-
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    message: "Gostei muito do trabalho!",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c5bbe8bd019c30ce54/download/Aline.jpeg",
-    title: "Aline",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    message: "APP top!!!",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c1b3cae167b7430287/download/Paulo.jpg",
-    title: "Paulo",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    message: "Precisa melhorar o desempenho da página inicial",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99beb914e288c5a6d97f/download/Geovana.jpeg",
-    title: "Geovana",
-  },
-  {
-    id: "gd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    message: "O usuário precisa de reparos no back-end",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c34265ae6247687fb9/download/Caillany.jpeg",
-    title: "Caillany",
-  },
-  {
-    id: "8ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    message: "Contrato com o governo em pendência",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99bb367e7b76cf442ce1/download/Erica.jpeg",
-    title: "Erica",
-  },
-  {
-    id: "18694a0f-3da1-471f-bd96-145571e29d72",
-    message: "Produção em andamento",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c0028fa042d6ea7aa0/download/Daniel.jpeg",
-    title: "Daniel",
-  },
-  {
-    id: "qd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    message: "Modelo finalizado com sucesso!",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99bf1bbe03889a69f10f/download/Rayssa.jpeg",
-    title: "Rayssa",
-  },
-  {
-    id: "2ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    message: "Reunião Quarta-feira às 110h",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/629a99c63d885c76db91d799/download/Eduarda.jpeg",
-    title: "Eduarda",
-  },
-  {
-    id: "98694a0f-3da1-471f-bd96-145571e29d72",
-    message: "Melhor empresa",
-    photo:
-      "https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/62a9bf0d5caccd08b376817f/download/grupo.jpg",
-    title: "Safe Woman",
-  },
-];
 
 export function Police() {
   const [id, setId] = useState(0);
   const [client, setClient] = useState("");
   const [active, setActive] = useState(0);
-  const [lat, setLat] = useState(0);
-  const [lon, setLon] = useState(0);
+  const [lat, setLat] = useState("");
+  const [lon, setLon] = useState("");
   const [device, setDevice] = useState("");
   const [place, setPlace] = useState("");
   const [state, setState] = useState("")
   const [city, setCity] = useState("")
   const [cep, setCep] = useState("")
   const [country, setCountry] = useState("")
-
-  const copyToClipboard = () => {
-    Clipboard.setString(device)
-  }
 
   const places = axios.create({
     baseURL: "https://nominatim.openstreetmap.org/",
@@ -126,23 +59,11 @@ export function Police() {
             setLat(response.data.with[0].content.Latitude);
             setLon(response.data.with[0].content.Longitude);
             setDevice(response.data.with[0].content.Device);
-          }),
+          })
+          ,
         1000
       );
     }, []);
-
-  // setInterval(
-  //   () =>
-  //     apiWatch.get("/").then((response) => {
-  //       setId(response.data.with[0].content.Id);
-  //       setClient(response.data.with[0].content.Client);
-  //       setActive(response.data.with[0].content.Active);
-  //       setLat(response.data.with[0].content.Latitude);
-  //       setLon(response.data.with[0].content.Longitude);
-  //       setDevice(response.data.with[0].content.Device);
-  //     }),
-  //   1000
-  // );
 
   return (
     <KeyboardAvoidingView
@@ -152,33 +73,20 @@ export function Police() {
       <View
         style={{
           flex: 1,
-          // height: 'auto'
         }}
         >
         {active === 1 ? (
           <ScrollView
           style={{
-            // display: "flex",
-            // flexDirection: "column",
-            // alignItems: "center",
-            // justifyContent: "flex-start",
             backgroundColor: '#181b23',
-            // flex: 1,
             marginBottom: -350
           }}
           >
             <View
               style={{
                 display: "flex",
-                // justifyContent: "center",
                 alignItems: "center",
-                // width: '100%',
-                // height: 'auto',
-                // paddingBottom: 20,
                 paddingTop: getStatusBarHeight() + 20,
-                // marginBottom: 80,
-                // position: 'absolute',
-                // marginTop: 0
               }}
             >
               <Photo 
@@ -202,129 +110,39 @@ export function Police() {
                     : "https://www.gov.br/cdn/sso-status-bar/src/image/user.png"
                 }
               />
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 26,
-                  marginTop: 10,
-                  color: '#fff'
-                }}
-                >
-                {client}
-              </Text>
+              <Name>{client}</Name>
             </View>
             <View style={{
               marginBottom: '100%',
               width: '100%',
-              // height: '100%',
               display: 'flex',
               padding: 20,
-              // justifyContent: 'space-around',
-              // alignItems: 'flex-start',
-              // backgroundColor: '#d33'
-              // backgroundColor: '#183823',
             }}>
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 16,
-                  color: '#fff',
-                  marginBottom: 10
-                }}
-              >
-                Geral:
-              </Text>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>Cliente: {client}</Text>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>Id: {id}</Text>
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 16,
-                  color: '#fff',
-                  marginBottom: 10
-                }}
-              >
-                Localização:
-              </Text>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>Local: {place}</Text>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>Cidade: {city}</Text>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>Estado: {state}</Text>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>País: {country}</Text>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>CEP: {cep}</Text>
+              <Type>Geral:</Type>
+                <Describe title={`Cliente: ${client}`}/>
+                <Describe title={`Id: ${id}`}/>
+              <Type>Localização:</Type>
+              <Describe title={`Local: ${place}`}/>
+              <Describe title={`Cidade: ${city}`}/>
+              <Describe title={`Estado: ${state}`}/>
+              <Describe title={`País: ${country}`}/>
+              <Describe title={`CEP: ${cep}`}/>
               <View style={{
                 display: "flex",
                 flexDirection: 'row',
                 justifyContent: 'space-between'
               }}>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>Latitude: {lat}</Text>
-              <Text style={{
-                  color: '#fff',
-                  backgroundColor: '#1F2029',
-                  padding: 10,
-                  borderRadius: 8,
-                  marginBottom: 10
-                }}>Longitude: {lon}</Text>
+                <Describe title={`Latitude: ${lat}`}/>
+                <Describe title={`Longitude: ${lon}`}/>
               </View>
               <View style={{
                 width: '100%',
                 height: 400,
                 marginBottom: -150,
-                // paddingBottom: -20
                 }}>
               <WebView source={{ uri: `https://api.mapbox.com/styles/v1/mapbox/dark-v10.html?title=true&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA#15/${lat}/${lon}` }}
               style={{
                 width: '100%',
-                // height: 200,
-                // marginBottom: 10,
-                // paddingBottom: -20
                 }}/>
               </View>
               <View style={{
@@ -332,31 +150,18 @@ export function Police() {
                 paddingTop: 10,
                 paddingBottom: 10
               }}>
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 16,
-                  color: '#fff',
-                  marginBottom: 10,
-                }}
-              >
-                Dispositivo:
-              </Text>
-              <TouchableOpacity onPress={() => copyToClipboard()} style={{
+              <Type>Dispositivo:</Type>
+              <TouchableOpacity onPress={() => Clipboard.setString(device)} style={{
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 backgroundColor: '#1F2029',
-                padding: 10,
-                borderRadius: 8,
-                marginBottom: 10
+                paddingRight: 10,
+                paddingTop: 10
                 }}>
-              <Text style={{
-                color: '#fff',
-                }}>Id: {device}
-                </Text>
-                <Feather name="copy" size={15} color="white" />
+                <Describe title={`Id: ${device}`}/>
+                <Feather name="copy" size={15} color="white" style={{marginBottom: 10}}/>
               </TouchableOpacity>
               <Pressable
                 style={{
@@ -366,28 +171,7 @@ export function Police() {
                   elevation: 2,
                   backgroundColor: "#d53f8c",
                 }}
-                onPress={() =>
-                  axios
-                    .post("https://dweet.io/dweet/for/safewoman?Active=0")
-                    .then(function (response) {
-                      console.log(response);
-                      setInterval(
-                        () =>
-                          apiWatch.get("/").then((response) => {
-                            setId(response.data.with[0].content.Id);
-                            setClient(response.data.with[0].content.Client);
-                            setActive(response.data.with[0].content.Active);
-                            setLat(response.data.with[0].content.Latitude);
-                            setLon(response.data.with[0].content.Longitude);
-                            setDevice(response.data.with[0].content.Device);
-                          }),
-                        1000
-                      );
-                    })
-                    .catch(function (error) {
-                      console.log(error);
-                    })
-                }
+                onPress={() => axios.post("https://dweet.io/dweet/for/safewoman?Active=0")}
               >
                 <Text
                   style={{

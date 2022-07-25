@@ -11,7 +11,7 @@ export default {
     SECONDARY_500: '#7A6769',
     SECONDARY_400: '#93797B',
 
-    SUCCESS_900: '#528F33',
+    SUCCESS_900: '#1F2029',
     SUCCESS_50: '#F7FFF9',
 
     ALERT_900: '#B27F00',
