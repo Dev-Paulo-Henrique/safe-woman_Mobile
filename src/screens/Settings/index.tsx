@@ -1,7 +1,7 @@
 import React from "react";
 import { Platform, KeyboardAvoidingView, View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Container, Content } from './styles'
+import { Container, Content } from "./styles";
 import "react-native-gesture-handler";
 import { List } from "../../components/List";
 import { Search } from "../Search";

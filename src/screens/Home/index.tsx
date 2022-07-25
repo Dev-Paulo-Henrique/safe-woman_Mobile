@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { DeleteLabel, Title, Upload, Container, Content } from './styles'
-import { Pressable, ActivityIndicator, Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
-import { RectButton, RectButtonProps } from 'react-native-gesture-handler'
+import { Container, Content } from './styles'
+import { Pressable, ActivityIndicator, Platform, KeyboardAvoidingView, FlatList, Image, View, Text } from 'react-native'
+import { RectButton } from 'react-native-gesture-handler'
 import { Photo } from '../../components/Photo';
 import { Mode } from '../../components/Modal';
-import { SliderContainer, SliderContent } from '../../components/Slider';
+import { SliderContainer } from '../../components/Slider';
 import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 import Slick from 'react-native-slick';
