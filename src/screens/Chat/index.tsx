@@ -12,7 +12,7 @@ export function User() {
       <Container>
         <Title>Nenhuma mensagem</Title>
       </Container>
-      <Input placeholder="Mensagem..." />
+      <Input placeholder="Mensagem..." selectionColor="#D53F8C"/>
       <Button>
         <Feather name="arrow-right-circle" size={24} color="white" />
       </Button>

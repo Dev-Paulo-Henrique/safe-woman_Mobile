@@ -27,8 +27,8 @@ export function SignIn(){
             <Container>
             <Brand source={brandImg}/>
             <Title>Login</Title>
-            <Input placeholder='E-mail' type="secondary" onChangeText={setEmail} autoCorrect={false} autoCapitalize="none"/>
-            <Input placeholder='Senha' type="secondary" onChangeText={setPassword} secureTextEntry/>
+            <Input placeholder='E-mail' type="secondary" onChangeText={setEmail} autoCorrect={false} autoCapitalize="none" selectionColor="#D53F8C"/>
+            <Input placeholder='Senha' type="secondary" onChangeText={setPassword} secureTextEntry selectionColor="#D53F8C"/>
             <ForgotPasswordButton onPress={() => Alert.alert('Erro', 'Este serviço não está disponível no momento.')}>
                 <ForgotPasswordLabel>Esqueci minha senha</ForgotPasswordLabel>
             </ForgotPasswordButton>
