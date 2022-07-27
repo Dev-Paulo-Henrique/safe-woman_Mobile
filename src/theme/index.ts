@@ -28,6 +28,6 @@ export default {
 
   FONTS: {
     TITLE: 'Poppins_400Regular',
-    TEXT: 'DMSans_400Regular',
+    TEXT: 'Poppins_400Regular',
   },
 };

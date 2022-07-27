@@ -18,7 +18,7 @@ import "react-native-gesture-handler";
 import { Feather } from '@expo/vector-icons'; 
 import WebView from 'react-native-webview';
 import { DATA } from '../../services/data';
-
+import { Container, Scroll, Content, Description, Unity, Web, Index, Button, See, Title, Load } from './styles'
 import { apiWatch } from "../../services/api";
 import axios from "axios";
 
@@ -70,25 +70,10 @@ export function Police() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <View
-        style={{
-          flex: 1,
-        }}
-        >
+      <Container>
         {active === 1 ? (
-          <ScrollView
-          style={{
-            backgroundColor: '#181b23',
-            marginBottom: -350
-          }}
-          >
-            <View
-              style={{
-                display: "flex",
-                alignItems: "center",
-                paddingTop: getStatusBarHeight() + 20,
-              }}
-            >
+          <Scroll>
+            <Content>
               <Photo 
                 uri={
                   client === "Aline"
@@ -111,13 +96,8 @@ export function Police() {
                 }
               />
               <Name>{client}</Name>
-            </View>
-            <View style={{
-              marginBottom: '100%',
-              width: '100%',
-              display: 'flex',
-              padding: 20,
-            }}>
+            </Content>
+            <Description>
               <Type>Geral:</Type>
                 <Describe title={`Cliente: ${client}`}/>
                 <Describe title={`Id: ${id}`}/>
@@ -127,80 +107,31 @@ export function Police() {
               <Describe title={`Estado: ${state}`}/>
               <Describe title={`País: ${country}`}/>
               <Describe title={`CEP: ${cep}`}/>
-              <View style={{
-                display: "flex",
-                flexDirection: 'row',
-                justifyContent: 'space-between'
-              }}>
+              <Unity>
                 <Describe title={`Latitude: ${lat}`}/>
                 <Describe title={`Longitude: ${lon}`}/>
-              </View>
-              <View style={{
-                width: '100%',
-                height: 400,
-                marginBottom: -150,
-                }}>
-              <WebView source={{ uri: `https://api.mapbox.com/styles/v1/mapbox/dark-v10.html?title=true&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA#15/${lat}/${lon}` }}
-              style={{
-                width: '100%',
-                }}/>
-              </View>
-              <View style={{
-                backgroundColor: '#181b23',
-                paddingTop: 10,
-                paddingBottom: 10
-              }}>
+              </Unity>
+              <Web>
+              <WebView source={{ uri: `https://api.mapbox.com/styles/v1/mapbox/dark-v10.html?title=true&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA#15/${lat}/${lon}`}}/>
+              </Web>
+              <Index>
               <Type>Dispositivo:</Type>
-              <TouchableOpacity onPress={() => Clipboard.setString(device)} style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                backgroundColor: '#1F2029',
-                paddingRight: 10,
-                paddingTop: 10
-                }}>
+              <Button onPress={() => Clipboard.setString(device)}>
                 <Describe title={`Id: ${device}`}/>
                 <Feather name="copy" size={15} color="white" style={{marginBottom: 10}}/>
-              </TouchableOpacity>
-              <Pressable
-                style={{
-                  borderRadius: 8,
-                  padding: 10,
-                  marginTop: 10,
-                  elevation: 2,
-                  backgroundColor: "#d53f8c",
-                }}
-                onPress={() => axios.post("https://dweet.io/dweet/for/safewoman?Active=0")}
-              >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    color: "#fff",
-                    fontSize: 18,
-                  }}
-                >
-                  Visualizar
-                </Text>
-              </Pressable>
-              </View>
-            </View>
-          </ScrollView>
+              </Button>
+              <See onPress={() => axios.post("https://dweet.io/dweet/for/safewoman?Active=0")}>
+                <Title>Visualizar</Title>
+              </See>
+              </Index>
+            </Description>
+          </Scroll>
         ) : (
-          <View
-            style={{
-              alignItems: "center",
-              width: "100%",
-              justifyContent: "center",
-              flex: 1,
-              backgroundColor: '#181b23',
-            }}
-          >
+          <Load>
             <ActivityIndicator size="large" color="#d53f8c" />
-          </View>
+          </Load>
         )}
-      </View>
+      </Container>
     </KeyboardAvoidingView>
   );
 }
