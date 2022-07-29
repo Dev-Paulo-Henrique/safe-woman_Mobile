@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components/native'
-// import { RectButton } from 'react-native-gesture-handler'
 
 export const Container = styled.TouchableOpacity`
 margin-bottom: 10px;
@@ -23,7 +22,6 @@ ${({ theme }) => css`
 color: ${ theme.COLORS.TITLE };
 font-family: ${ theme.FONTS.TEXT };
 `}
-
 `
 
 export const Type = styled.Text`
@@ -36,7 +34,6 @@ ${({ theme }) => css`
 color: ${ theme.COLORS.TITLE };
 font-family: ${ theme.FONTS.TITLE };
 `}
-
 `
 
 export const Name = styled.Text`
@@ -48,5 +45,4 @@ ${({ theme }) => css`
 color: ${ theme.COLORS.TITLE };
 font-family: ${ theme.FONTS.TITLE };
 `}
-
 `

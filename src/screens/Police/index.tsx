@@ -4,7 +4,6 @@ import {
   Platform,
   KeyboardAvoidingView,
   Clipboard,
-  Alert,
 } from "react-native";
 import { Photo } from "../../components/Photo";
 import { Describe } from "../../components/Describe";
@@ -16,39 +15,40 @@ import { DATA } from '../../services/data';
 import { Container, Scroll, Content, Description, Unity, Web, Index, Button, See, Title, Load } from './styles'
 import { apiWatch, places, refresh } from "../../services/api";
 
+interface UserProps {
+  Id: number;
+  Client: string;
+  Active: number;
+  Latitude: string;
+  Longitude: string;
+  Device: string;
+}
+
+interface LocalProps {
+  name: string;
+  address: {
+    state: string;
+    city: string;
+    postcode: string;
+    country: string;
+  }
+}
+
 export function Police() {
-  const [id, setId] = useState(0);
-  const [client, setClient] = useState("");
-  const [active, setActive] = useState(0);
-  const [lat, setLat] = useState("");
-  const [lon, setLon] = useState("");
-  const [device, setDevice] = useState("");
-  const [place, setPlace] = useState("");
-  const [state, setState] = useState("")
-  const [city, setCity] = useState("")
-  const [cep, setCep] = useState("")
-  const [country, setCountry] = useState("")
+  const [user, setUser] = useState<UserProps>();
+  const [local, setLocal] = useState<LocalProps>();
 
   places
-    .get(`/reverse.php?lat=${lat}&lon=${lon}&format=jsonv2`)
+    .get(`/reverse.php?lat=${user?.Latitude}&lon=${user?.Longitude}&format=jsonv2`)
     .then((response) => {
-      setPlace(response.data.name);
-      setState(response.data.address.state);
-      setCity(response.data.address.city);
-      setCep(response.data.address.postcode);
-      setCountry(response.data.address.country);
+      setLocal(response.data)
     });
 
     useEffect(() => {
       setInterval(
         () =>
           apiWatch.get("/").then((response) => {
-            setId(response.data.with[0].content.Id);
-            setClient(response.data.with[0].content.Client);
-            setActive(response.data.with[0].content.Active);
-            setLat(response.data.with[0].content.Latitude);
-            setLon(response.data.with[0].content.Longitude);
-            setDevice(response.data.with[0].content.Device);
+            setUser(response.data.with[0].content)
           })
           ,
         1000
@@ -61,53 +61,53 @@ export function Police() {
       style={{ flex: 1 }}
     >
       <Container>
-        {active === 1 ? (
+        {user?.Active === 1 ? (
           <Scroll>
             <Content>
               <Photo 
                 uri={
-                  client === "Aline"
+                  user?.Client === "Aline"
                     ? DATA[0].photo
-                    : client === "Geovana"
+                    : user?.Client === "Geovana"
                     ? DATA[2].photo
-                    : client === "Caillany"
+                    : user?.Client === "Caillany"
                     ? DATA[3].photo
-                    : client === "Erica"
+                    : user?.Client === "Erica"
                     ? DATA[4].photo
-                    : client === "Rayssa"
+                    : user?.Client === "Rayssa"
                     ? DATA[6].photo
-                    : client === "Daniel"
+                    : user?.Client === "Daniel"
                     ? DATA[5].photo
-                    : client === "Eduarda"
+                    : user?.Client === "Eduarda"
                     ? DATA[7].photo
-                    : client === "Paulo"
+                    : user?.Client === "Paulo"
                     ? DATA[1].photo
                     : "https://www.gov.br/cdn/sso-status-bar/src/image/user.png"
                 }
               />
-              <Name>{client}</Name>
+              <Name>{user?.Client}</Name>
             </Content>
             <Description>
               <Type>Geral:</Type>
-                <Describe title={`Cliente: ${client}`}/>
-                <Describe title={`Id: ${id}`}/>
+                <Describe title={`Cliente: ${user?.Client}`}/>
+                <Describe title={`Id: ${user?.Id}`}/>
               <Type>Localização:</Type>
-              <Describe title={`Local: ${place}`}/>
-              <Describe title={`Cidade: ${city}`}/>
-              <Describe title={`Estado: ${state}`}/>
-              <Describe title={`País: ${country}`}/>
-              <Describe title={`CEP: ${cep}`}/>
+              <Describe title={`Local: ${local?.name}`}/>
+              <Describe title={`Cidade: ${local?.address.city}`}/>
+              <Describe title={`Estado: ${local?.address.state}`}/>
+              <Describe title={`País: ${local?.address.country}`}/>
+              <Describe title={`CEP: ${local?.address.postcode}`}/>
               <Unity>
-                <Describe title={`Latitude: ${lat}`}/>
-                <Describe title={`Longitude: ${lon}`}/>
+                <Describe title={`Latitude: ${user?.Latitude}`}/>
+                <Describe title={`Longitude: ${user?.Longitude}`}/>
               </Unity>
               <Web>
-              <WebView source={{ uri: `https://api.mapbox.com/styles/v1/mapbox/dark-v10.html?title=true&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA#15/${lat}/${lon}`}}/>
+              <WebView source={{ uri: `https://api.mapbox.com/styles/v1/mapbox/dark-v10.html?title=true&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA#15/${user?.Latitude}/${user?.Longitude}`}}/>
               </Web>
               <Index>
               <Type>Dispositivo:</Type>
-              <Button onPress={() => Clipboard.setString(device)}>
-                <Describe title={`Id: ${device}`}/>
+              <Button onPress={() => Clipboard.setString(user?.Device)}>
+                <Describe title={`Id: ${user?.Device}`}/>
                 <Feather name="copy" size={15} color="white" style={{marginBottom: 10}}/>
               </Button>
               <See onPress={() => refresh.post("")}>

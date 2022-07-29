@@ -1,15 +1,9 @@
 import styled, { css } from 'styled-components/native'
-// import { RectButton } from 'react-native-gesture-handler'
 
 export const Container = styled.View`
 margin-bottom: 10;
-/* flex: 1; */
-/* max-height: 56px;
-min-height: 56px; */
 border-radius: 8px;
 padding: 10px;
-/* justify-content: center;
-align-items: center; */
 background-color: ${({ theme }) => theme.COLORS.SUCCESS_900 };
 `
 
@@ -20,7 +14,6 @@ ${({ theme }) => css`
 color: ${ theme.COLORS.TITLE };
 font-family: ${ theme.FONTS.TEXT };
 `}
-
 `
 
 export const Type = styled.Text`
@@ -33,7 +26,6 @@ ${({ theme }) => css`
 color: ${ theme.COLORS.TITLE };
 font-family: ${ theme.FONTS.TITLE };
 `}
-
 `
 
 export const Name = styled.Text`
@@ -45,5 +37,4 @@ ${({ theme }) => css`
 color: ${ theme.COLORS.TITLE };
 font-family: ${ theme.FONTS.TITLE };
 `}
-
 `

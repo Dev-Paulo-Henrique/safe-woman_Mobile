@@ -24,7 +24,6 @@ ${({ theme }) => css`
 color: ${ theme.COLORS.TITLE };
 font-family: ${ theme.FONTS.TEXT };
 `}
-
 `
 
 export const Load =styled.ActivityIndicator.attrs(({ theme }) => ({

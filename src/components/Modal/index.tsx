@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
-import { Container, Title } from './styles'
-import { MaterialIcons, Ionicons, Feather } from '@expo/vector-icons';
-import { Modal, Pressable, ActivityIndicator, Platform, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, StyleSheet, Image, View, Text, TextInput, Alert, Animated } from 'react-native'
+import { Container } from './styles'
+import { Feather } from '@expo/vector-icons';
+import { Modal, Pressable, ActivityIndicator, View, Text, Alert } from 'react-native'
 
 
 export function Mode(){
