@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-  Pressable,
   ActivityIndicator,
   Platform,
   KeyboardAvoidingView,
-  View,
-  Text,
-  ScrollView,
   Clipboard,
-  TouchableOpacity
+  Alert,
 } from "react-native";
-import { getStatusBarHeight, getBottomSpace } from "react-native-iphone-x-helper";
 import { Photo } from "../../components/Photo";
 import { Describe } from "../../components/Describe";
 import { Type, Name } from "../../components/Describe/styles";
@@ -19,8 +14,7 @@ import { Feather } from '@expo/vector-icons';
 import WebView from 'react-native-webview';
 import { DATA } from '../../services/data';
 import { Container, Scroll, Content, Description, Unity, Web, Index, Button, See, Title, Load } from './styles'
-import { apiWatch } from "../../services/api";
-import axios from "axios";
+import { apiWatch, places, refresh } from "../../services/api";
 
 export function Police() {
   const [id, setId] = useState(0);
@@ -34,10 +28,6 @@ export function Police() {
   const [city, setCity] = useState("")
   const [cep, setCep] = useState("")
   const [country, setCountry] = useState("")
-
-  const places = axios.create({
-    baseURL: "https://nominatim.openstreetmap.org/",
-  });
 
   places
     .get(`/reverse.php?lat=${lat}&lon=${lon}&format=jsonv2`)
@@ -120,7 +110,7 @@ export function Police() {
                 <Describe title={`Id: ${device}`}/>
                 <Feather name="copy" size={15} color="white" style={{marginBottom: 10}}/>
               </Button>
-              <See onPress={() => axios.post("https://dweet.io/dweet/for/safewoman?Active=0")}>
+              <See onPress={() => refresh.post("")}>
                 <Title>Visualizar</Title>
               </See>
               </Index>
