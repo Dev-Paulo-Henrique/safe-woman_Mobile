@@ -1,5 +1,4 @@
 import React from "react";
-import { Platform, KeyboardAvoidingView, View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Container, Content } from "./styles";
 import "react-native-gesture-handler";
@@ -8,15 +7,13 @@ import { Search } from "../Search";
 import { Info } from "../Info";
 import { Avaliar } from "../Avaliar";
 import { Manual } from "../Manual";
+import { Space } from "../../components/Space";
 
 const { Navigator, Screen } = createStackNavigator();
 
 export function Settings({ navigation }: any) {
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={{ flex: 1 }}
-    >
+    <Space>
       <Container>
         <Content>
           <List
@@ -41,7 +38,7 @@ export function Settings({ navigation }: any) {
           />
         </Content>
       </Container>
-    </KeyboardAvoidingView>
+    </Space>
   );
 }
 

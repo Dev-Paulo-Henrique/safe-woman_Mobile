@@ -1,7 +1,8 @@
 import { api } from "../../services/api";
 import React, { useState, useEffect } from "react";
-import { Platform, KeyboardAvoidingView, View, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Space } from "../../components/Space";
 import {
   requestForegroundPermissionsAsync,
   getCurrentPositionAsync,
@@ -101,10 +102,7 @@ export function Search() {
     return null;
   }
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={{ flex: 1 }}
-    >
+    <Space>
       <Container>
         <Input
           placeholder="Buscar usuárias..."
@@ -139,6 +137,6 @@ export function Search() {
           </ScrollView>
         </ViewUser>
       </Container>
-    </KeyboardAvoidingView>
+    </Space>
   );
 }

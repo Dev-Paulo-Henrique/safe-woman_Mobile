@@ -1,13 +1,11 @@
-import { Platform, KeyboardAvoidingView, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import { TIP } from "../../services/data";
 import { Container, Content, Text } from "./styles";
+import { Space } from "../../components/Space";
 
 export function Manual() {
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={{ flex: 1 }}
-    >
+    <Space>
       <FlatList
         data={TIP}
         keyExtractor={(TIP) => TIP.id}
@@ -24,6 +22,6 @@ export function Manual() {
           height: "auto",
         }}
       />
-    </KeyboardAvoidingView>
+    </Space>
   );
 }

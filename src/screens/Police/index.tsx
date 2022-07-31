@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from "react";
-import {
-  ActivityIndicator,
-  Platform,
-  KeyboardAvoidingView,
-  Clipboard,
-} from "react-native";
+import { ActivityIndicator, Clipboard } from "react-native";
 import { Photo } from "../../components/Photo";
 import { Describe } from "../../components/Describe";
 import { Type, Name } from "../../components/Describe/styles";
 import "react-native-gesture-handler";
-import { Feather } from '@expo/vector-icons'; 
-import WebView from 'react-native-webview';
-import { DATA } from '../../services/data';
-import { Container, Scroll, Content, Description, Unity, Web, Index, Button, See, Title, Load } from './styles'
+import { Feather } from "@expo/vector-icons";
+import WebView from "react-native-webview";
+import { DATA } from "../../services/data";
+import {
+  Container,
+  Scroll,
+  Content,
+  Description,
+  Unity,
+  Web,
+  Index,
+  Button,
+  See,
+  Title,
+  Load,
+} from "./styles";
 import { apiWatch, places, refresh } from "../../services/api";
+import { Space } from "../../components/Space";
 
 interface UserProps {
   Id: number;
@@ -31,7 +39,7 @@ interface LocalProps {
     city: string;
     postcode: string;
     country: string;
-  }
+  };
 }
 
 export function Police() {
@@ -39,32 +47,30 @@ export function Police() {
   const [local, setLocal] = useState<LocalProps>();
 
   places
-    .get(`/reverse.php?lat=${user?.Latitude}&lon=${user?.Longitude}&format=jsonv2`)
+    .get(
+      `/reverse.php?lat=${user?.Latitude}&lon=${user?.Longitude}&format=jsonv2`
+    )
     .then((response) => {
-      setLocal(response.data)
+      setLocal(response.data);
     });
 
-    useEffect(() => {
-      setInterval(
-        () =>
-          apiWatch.get("/").then((response) => {
-            setUser(response.data.with[0].content)
-          })
-          ,
-        1000
-      );
-    }, []);
+  useEffect(() => {
+    setInterval(
+      () =>
+        apiWatch.get("/").then((response) => {
+          setUser(response.data.with[0].content);
+        }),
+      1000
+    );
+  }, []);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={{ flex: 1 }}
-    >
+    <Space>
       <Container>
         {user?.Active === 1 ? (
           <Scroll>
             <Content>
-              <Photo 
+              <Photo
                 uri={
                   user?.Client === "Aline"
                     ? DATA[0].photo
@@ -89,30 +95,39 @@ export function Police() {
             </Content>
             <Description>
               <Type>Geral:</Type>
-                <Describe title={`Cliente: ${user?.Client}`}/>
-                <Describe title={`Id: ${user?.Id}`}/>
+              <Describe title={`Cliente: ${user?.Client}`} />
+              <Describe title={`Id: ${user?.Id}`} />
               <Type>Localização:</Type>
-              <Describe title={`Local: ${local?.name}`}/>
-              <Describe title={`Cidade: ${local?.address.city}`}/>
-              <Describe title={`Estado: ${local?.address.state}`}/>
-              <Describe title={`País: ${local?.address.country}`}/>
-              <Describe title={`CEP: ${local?.address.postcode}`}/>
+              <Describe title={`Local: ${local?.name}`} />
+              <Describe title={`Cidade: ${local?.address.city}`} />
+              <Describe title={`Estado: ${local?.address.state}`} />
+              <Describe title={`País: ${local?.address.country}`} />
+              <Describe title={`CEP: ${local?.address.postcode}`} />
               <Unity>
-                <Describe title={`Latitude: ${user?.Latitude}`}/>
-                <Describe title={`Longitude: ${user?.Longitude}`}/>
+                <Describe title={`Latitude: ${user?.Latitude}`} />
+                <Describe title={`Longitude: ${user?.Longitude}`} />
               </Unity>
               <Web>
-              <WebView source={{ uri: `https://api.mapbox.com/styles/v1/mapbox/dark-v10.html?title=true&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA#15/${user?.Latitude}/${user?.Longitude}`}}/>
+                <WebView
+                  source={{
+                    uri: `https://api.mapbox.com/styles/v1/mapbox/dark-v10.html?title=true&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA#15/${user?.Latitude}/${user?.Longitude}`,
+                  }}
+                />
               </Web>
               <Index>
-              <Type>Dispositivo:</Type>
-              <Button onPress={() => Clipboard.setString(user?.Device)}>
-                <Describe title={`Id: ${user?.Device}`}/>
-                <Feather name="copy" size={15} color="white" style={{marginBottom: 10}}/>
-              </Button>
-              <See onPress={() => refresh.post("")}>
-                <Title>Visualizar</Title>
-              </See>
+                <Type>Dispositivo:</Type>
+                <Button onPress={() => Clipboard.setString(user?.Device)}>
+                  <Describe title={`Id: ${user?.Device}`} />
+                  <Feather
+                    name="copy"
+                    size={15}
+                    color="white"
+                    style={{ marginBottom: 10 }}
+                  />
+                </Button>
+                <See onPress={() => refresh.post("")}>
+                  <Title>Visualizar</Title>
+                </See>
               </Index>
             </Description>
           </Scroll>
@@ -122,6 +137,6 @@ export function Police() {
           </Load>
         )}
       </Container>
-    </KeyboardAvoidingView>
+    </Space>
   );
 }

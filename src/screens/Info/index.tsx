@@ -10,13 +10,11 @@ import {
   Name,
 } from "./styles";
 import { Feather } from "@expo/vector-icons";
+import { Space } from "../../components/Space";
 
 export function Info() {
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={{ flex: 1 }}
-    >
+    <Space>
       <Upload>
         <Photo uri="https://trello.com/1/cards/629a99a52a684d06bb95777e/attachments/62a9bf0d5caccd08b376817f/download/grupo.jpg" />
         <Container>
@@ -37,6 +35,6 @@ export function Info() {
         <Feather name="instagram" size={25} color="#d53f8c" />
         <Name>@safewoman22</Name>
       </Insta>
-    </KeyboardAvoidingView>
+    </Space>
   );
 }
