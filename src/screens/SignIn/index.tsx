@@ -11,7 +11,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import theme from "../../theme";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
-import { TouchableOpacity, Text, Alert } from "react-native";
+import { TouchableOpacity, Alert } from "react-native";
 import brandImg from "../../assets/icon.png";
 import { useAuth } from "../../hooks/auth";
 import { AntDesign } from "@expo/vector-icons";
