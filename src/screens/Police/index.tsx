@@ -103,10 +103,6 @@ export function Police() {
               <Describe title={`Estado: ${local?.address.state}`} />
               <Describe title={`País: ${local?.address.country}`} />
               <Describe title={`CEP: ${local?.address.postcode}`} />
-              <Unity>
-                <Describe title={`Latitude: ${user?.Latitude}`} />
-                <Describe title={`Longitude: ${user?.Longitude}`} />
-              </Unity>
               <Web>
                 <WebView
                   source={{

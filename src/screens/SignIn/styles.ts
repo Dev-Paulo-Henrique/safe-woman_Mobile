@@ -44,14 +44,3 @@ font-family: ${ theme.FONTS.TEXT };
 color: ${ theme.COLORS.TITLE };
 `}
 `
-
-export const GoogleButton = styled.TouchableOpacity`
-flex: 1;
-max-height: 56px;
-min-height: 56px;
-border-radius: 12px;
-justify-content: center;
-align-items: center;
-margin-top: 12px;
-background-color: ${({ theme }) =>  theme.COLORS.GOOGLE };
-`

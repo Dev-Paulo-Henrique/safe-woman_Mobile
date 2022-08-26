@@ -3,7 +3,6 @@ import {
   Container,
   Title,
   Brand,
-  GoogleButton,
   ForgotPasswordButton,
   ForgotPasswordLabel,
 } from "./styles";
@@ -12,9 +11,8 @@ import theme from "../../theme";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { TouchableOpacity, Alert } from "react-native";
-import brandImg from "../../assets/icon.png";
+import brandImg from "../../assets/negative.png";
 import { useAuth } from "../../hooks/auth";
-import { AntDesign } from "@expo/vector-icons";
 import { Space } from "../../components/Space";
 
 export function SignIn() {
@@ -36,7 +34,7 @@ export function SignIn() {
           <Brand source={brandImg} />
           <Title>Login</Title>
           <Input
-            placeholder="E-mail"
+            placeholder="Usuário"
             type="secondary"
             onChangeText={setEmail}
             autoCorrect={false}
@@ -63,16 +61,6 @@ export function SignIn() {
           <TouchableOpacity onPress={handleSignIn}>
             <Button title="Entrar" type="secondary" isLoading={isLogging} />
           </TouchableOpacity>
-          <GoogleButton
-            onPress={() =>
-              Alert.alert(
-                "Erro",
-                "Este serviço não está disponível no momento."
-              )
-            }
-          >
-            <AntDesign name="google" size={25} color="#FFF" />
-          </GoogleButton>
         </Container>
       </Space>
     </LinearGradient>
